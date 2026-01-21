@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  password       String
+  name           String
+  role           String   @default("client") // admin, client, viewer
+  createdAt      DateTime @default(now())
+  balance        Float    @default(0)
+  lastBalUpdated DateTime @updatedAt
+
+  callLogs     CallLog[]
+  transactions Transaction[]
+}
+
+model CallLog {
+  id          String    @id @default(cuid())
+  userId      String
+  callId      String    @unique
+  gender      String?
+  cost        Float?    @default(3.5)
+  language    String?
+  phoneNumber String?
+  otp         String?
+  status      String?
+  duration    Int?      @default(0)
+  createdAt   DateTime?
+  startTime   DateTime?
+  answerTime  DateTime?
+  callbackUrl String?   @default("")
+  ringTime    Int?      @default(0)
+  endAt       DateTime?
+  webhookSent Boolean?  @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+model Transaction {
+  id           String   @id @default(cuid())
+  userId       String
+  type         String // CREDIT, DEBIT
+  amount       Float
+  balanceAfter Float
+  description  String
+  reference    String?
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}

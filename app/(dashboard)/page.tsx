@@ -1,0 +1,374 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { format } from 'date-fns';
+
+interface DashboardStats {
+  totalCalls: number;
+  successfulCalls: number;
+  failedCalls: number;
+  balance: number;
+  successRate: number;
+}
+
+interface RecentCall {
+  id: string;
+  phoneNumber: string;
+  status: string;
+  cost: number;
+  duration: number | null;
+  createdAt: string;
+  callId: string;
+}
+
+export default function DashboardPage() {
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [recentCalls, setRecentCalls] = useState<RecentCall[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchDashboardData() {
+      try {
+        const [logsRes, balanceRes] = await Promise.all([
+          fetch('/api/calls/logs?limit=5'),
+          fetch('/api/billing/balance'),
+        ]);
+
+        const logsData = await logsRes.json();
+        const balanceData = await balanceRes.json();
+
+        const allLogs = logsData.logs || [];
+        const successful = allLogs.filter((l: RecentCall) => 
+          l.status === 'ANSWERED' || l.status === 'COMPLETED'
+        );
+        const failed = allLogs.filter((l: RecentCall) => l.status === 'FAILED');
+
+        setStats({
+          totalCalls: allLogs.length,
+          successfulCalls: successful.length,
+          failedCalls: failed.length,
+          balance: balanceData.balance,
+          successRate: allLogs.length > 0 ? (successful.length / allLogs.length) * 100 : 0,
+        });
+
+        setRecentCalls(allLogs.slice(0, 5));
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        setLoading(false);
+      }
+    }
+    fetchDashboardData();
+  }, []);
+
+  if (loading) {
+    return <LoadingAnimation />;
+  }
+
+  return (
+    <>
+      <style jsx>{`
+        @keyframes growUp {
+          from { transform: scaleY(0); }
+          to { transform: scaleY(1); }
+        }
+        .bar-animate {
+          transform-origin: bottom;
+          animation: growUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        
+        @keyframes drawLine {
+          from { stroke-dashoffset: 1000; }
+          to { stroke-dashoffset: 0; }
+        }
+        .line-animate {
+          stroke-dasharray: 1000;
+          stroke-dashoffset: 1000;
+          animation: drawLine 2s ease-out forwards;
+        }
+      `}</style>
+
+      <div className="p-6 md:p-8">
+        <div className="max-w-7xl mx-auto flex flex-col gap-8">
+          {/* Metrics Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            {/* Card 1: Total Calls */}
+            <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] flex flex-col justify-between group hover:border-[#5da28c]/30 transition-all">
+              <div className="flex justify-between items-start mb-4">
+                <div className="bg-[#eef6f4] p-2 rounded-lg text-[#5da28c]">
+                  <span className="material-symbols-outlined">call</span>
+                </div>
+                <div className="flex items-center text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                  <span className="material-symbols-outlined text-[14px] mr-1">trending_up</span>
+                  12%
+                </div>
+              </div>
+              <div>
+                <p className="text-slate-500 text-sm font-medium">Total Calls</p>
+                <h3 className="text-3xl font-bold text-slate-900 mt-1">
+                  {stats?.totalCalls.toLocaleString() || '0'}
+                </h3>
+                <p className="text-slate-400 text-xs mt-1">This month</p>
+              </div>
+            </div>
+
+            {/* Card 2: Current Balance */}
+            <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] flex flex-col justify-between relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#5da28c]/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+              <div className="flex justify-between items-start mb-2 relative z-10">
+                <div className="bg-[#eef6f4] p-2 rounded-lg text-[#5da28c]">
+                  <span className="material-symbols-outlined">account_balance_wallet</span>
+                </div>
+              </div>
+              <div className="relative z-10">
+                <p className="text-slate-500 text-sm font-medium">Current Balance</p>
+                <h3 className="text-3xl font-bold text-slate-900 mt-1">
+                  ₦{(stats?.balance || 0).toFixed(2)}
+                </h3>
+                <div className="mt-4">
+                  <button className="w-full flex items-center justify-center gap-2 bg-[#5da28c] hover:bg-[#4a8572] text-white text-sm font-bold py-2.5 px-4 rounded-lg transition-all shadow-sm shadow-[#5da28c]/20">
+                    <span className="material-symbols-outlined text-[18px]">add</span>
+                    Add Credit
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 3: Success Rate */}
+            <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] flex flex-col justify-between hover:border-[#5da28c]/30 transition-all">
+              <div className="flex justify-between items-start mb-4">
+                <div className="bg-[#eef6f4] p-2 rounded-lg text-[#5da28c]">
+                  <span className="material-symbols-outlined">check_circle</span>
+                </div>
+                <div className="flex items-center text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                  Optimal
+                </div>
+              </div>
+              <div>
+                <p className="text-slate-500 text-sm font-medium">Success Rate</p>
+                <h3 className="text-3xl font-bold text-slate-900 mt-1">
+                  {stats?.successRate.toFixed(1)}%
+                </h3>
+                <div className="w-full bg-slate-100 rounded-full h-1.5 mt-3 overflow-hidden">
+                  <div 
+                    className="bg-[#5da28c] h-1.5 rounded-full" 
+                    style={{ width: `${stats?.successRate}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 4: Failed Calls */}
+            <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] flex flex-col justify-between hover:border-[#5da28c]/30 transition-all">
+              <div className="flex justify-between items-start mb-4">
+                <div className="bg-red-50 p-2 rounded-lg text-red-500">
+                  <span className="material-symbols-outlined">error</span>
+                </div>
+                <a className="text-xs font-semibold text-[#5da28c] hover:underline" href="/calls">
+                  View logs
+                </a>
+              </div>
+              <div>
+                <p className="text-slate-500 text-sm font-medium">Failed Calls</p>
+                <h3 className="text-3xl font-bold text-slate-900 mt-1">
+                  {stats?.failedCalls || 0}
+                </h3>
+                <p className="text-red-500 text-xs mt-1 font-medium flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[14px]">warning</span>
+                  {stats?.failedCalls ? 'Requires attention' : 'All good!'}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Charts Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Line Chart */}
+            <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)]">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900">Call Volume Trends</h3>
+                  <p className="text-sm text-slate-500">Voice & OTP delivery over time</p>
+                </div>
+                <div className="flex bg-slate-100 p-1 rounded-lg">
+                  <button className="px-3 py-1 text-xs font-semibold rounded-md bg-white shadow-sm text-slate-800">
+                    Day
+                  </button>
+                  <button className="px-3 py-1 text-xs font-medium rounded-md text-slate-500">
+                    Week
+                  </button>
+                  <button className="px-3 py-1 text-xs font-medium rounded-md text-slate-500">
+                    Month
+                  </button>
+                </div>
+              </div>
+              
+              <div className="h-64 w-full relative">
+                <svg className="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 400 150">
+                  <line stroke="#f1f5f9" strokeWidth="1" x1="0" x2="400" y1="150" y2="150" />
+                  <line stroke="#f1f5f9" strokeWidth="1" x1="0" x2="400" y1="100" y2="100" />
+                  <line stroke="#f1f5f9" strokeWidth="1" x1="0" x2="400" y1="50" y2="50" />
+                  <line stroke="#f1f5f9" strokeWidth="1" x1="0" x2="400" y1="0" y2="0" />
+                  
+                  <path className="bar-animate" d="M0,120 Q40,100 80,110 T160,80 T240,60 T320,90 T400,40 V150 H0 Z" fill="url(#gradient)" opacity="0.2" />
+                  <path className="line-animate" d="M0,120 Q40,100 80,110 T160,80 T240,60 T320,90 T400,40" fill="none" stroke="#5da28c" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" />
+                  
+                  <defs>
+                    <linearGradient id="gradient" x1="0%" x2="0%" y1="0%" y2="100%">
+                      <stop offset="0%" style={{stopColor: '#5da28c', stopOpacity: 1}} />
+                      <stop offset="100%" style={{stopColor: '#ffffff', stopOpacity: 0}} />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div className="flex justify-between text-xs text-slate-400 mt-2">
+                  <span>00:00</span>
+                  <span>06:00</span>
+                  <span>12:00</span>
+                  <span>18:00</span>
+                  <span>23:59</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Bar Chart */}
+            <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)]">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900">Delivery Performance</h3>
+                  <p className="text-sm text-slate-500">Success vs Failed counts by day</p>
+                </div>
+                <div className="flex items-center gap-4 text-xs">
+                  <div className="flex items-center gap-1.5">
+                    <div className="size-2.5 rounded-full bg-[#5da28c]"></div>
+                    <span className="text-slate-600">Success</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="size-2.5 rounded-full bg-slate-200"></div>
+                    <span className="text-slate-600">Failed</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="h-64 flex items-end justify-between gap-2 px-2">
+                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => {
+                  const heights = [40, 65, 55, 85, 60, 30, 25];
+                  const failHeights = [10, 5, 8, 4, 12, 3, 2];
+                  return (
+                    <div key={day} className="flex flex-col items-center gap-2 flex-1 group cursor-pointer">
+                      <div className="w-full flex flex-col justify-end gap-1 h-full">
+                        <div 
+                          className="w-full bg-slate-200 rounded-sm opacity-80 bar-animate" 
+                          style={{ height: `${failHeights[i]}%`, animationDelay: `${i * 0.1}s` }}
+                        ></div>
+                        <div 
+                          className="w-full bg-[#5da28c] rounded-sm bar-animate group-hover:bg-[#4a8572] transition-colors" 
+                          style={{ height: `${heights[i]}%`, animationDelay: `${i * 0.1}s` }}
+                        ></div>
+                      </div>
+                      <span className={`text-xs ${i === 3 ? 'font-bold text-[#5da28c]' : 'text-slate-400'}`}>
+                        {day}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Recent Activity Table */}
+          <div className="bg-white rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] overflow-hidden">
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-slate-900">Recent Activity</h3>
+              <button className="text-sm text-[#5da28c] font-semibold hover:text-[#4a8572] transition-colors">
+                View All Logs
+              </button>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-[#f9fafa] text-slate-500 font-medium border-b border-slate-100">
+                  <tr>
+                    <th className="px-6 py-4">Time</th>
+                    <th className="px-6 py-4">Recipient</th>
+                    <th className="px-6 py-4">Type</th>
+                    <th className="px-6 py-4">Duration</th>
+                    <th className="px-6 py-4">Status</th>
+                    <th className="px-6 py-4 text-right">Cost</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {recentCalls.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-12 text-center text-slate-400">
+                        No recent calls
+                      </td>
+                    </tr>
+                  ) : (
+                    recentCalls.map((call) => (
+                      <tr key={call.id} className="group hover:bg-slate-50 transition-colors">
+                        <td className="px-6 py-4 text-slate-600 font-mono text-xs">
+                          {format(new Date(call.createdAt), 'MMM dd, HH:mm:ss')}
+                        </td>
+                        <td className="px-6 py-4 font-medium text-slate-900">
+                          {call.phoneNumber.slice(0, -4)}***{call.phoneNumber.slice(-4)}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-slate-400 text-[18px]">key</span>
+                            <span className="text-slate-600">OTP Code</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-slate-600">
+                          {call.duration ? `00:${String(call.duration).padStart(2, '0')}` : '-'}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
+                            call.status === 'ANSWERED' || call.status === 'COMPLETED'
+                              ? 'bg-[#5da28c]/10 text-[#4a8572] border border-[#5da28c]/20'
+                              : 'bg-red-50 text-red-600 border border-red-100'
+                          }`}>
+                            <span className={`size-1.5 rounded-full ${
+                              call.status === 'ANSWERED' || call.status === 'COMPLETED' 
+                                ? 'bg-[#5da28c]' 
+                                : 'bg-red-500'
+                            }`}></span>
+                            {call.status === 'ANSWERED' || call.status === 'COMPLETED' ? 'Success' : 'Failed'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-right font-mono text-slate-900">
+                          ₦{call.cost.toFixed(3)}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function LoadingAnimation() {
+  return (
+    <div className="flex items-center justify-center h-full">
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <span className="material-symbols-outlined text-4xl text-[#5da28c] animate-pulse">
+            phone_in_talk
+          </span>
+          <div className="flex gap-1">
+            <div className="w-2 h-2 bg-[#5da28c] rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
+            <div className="w-2 h-2 bg-[#5da28c] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+            <div className="w-2 h-2 bg-[#5da28c] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+          </div>
+          <span className="material-symbols-outlined text-4xl text-[#5da28c] animate-pulse">
+            phone_forwarded
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
