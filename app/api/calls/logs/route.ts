@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
     let filteredLogs = decryptedLogs;
     if (search) {
       filteredLogs = decryptedLogs.filter(log =>
-        log.phone_number.includes(search) || log.call_id.includes(search)
+        (log.phone_number || '').includes(search) || log.call_id.includes(search)
       );
     }
 
