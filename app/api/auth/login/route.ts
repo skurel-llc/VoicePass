@@ -34,6 +34,8 @@ export async function POST(req: NextRequest) {
       email: user.email,
       name: user.name,
       role: user.role,
+      company: user.company || '',
+      phone: user.phone || '',
     });
 
     // Set cookie
@@ -46,6 +48,8 @@ export async function POST(req: NextRequest) {
         email: user.email,
         name: user.name,
         role: user.role,
+        company: user.company || '',
+        phone: user.phone || '',
       },
     });
   } catch (error) {

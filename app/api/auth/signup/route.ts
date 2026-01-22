@@ -63,6 +63,8 @@ export async function POST(req: NextRequest) {
       email: user.email,
       name: user.name,
       role: user.role,
+      company: user.company || '',
+      phone: user.phone || '',
     });
 
     await setSessionCookie(token);
@@ -74,6 +76,8 @@ export async function POST(req: NextRequest) {
         email: user.email,
         name: user.name,
         role: user.role,
+        company: user.company || '',
+        phone: user.phone || '',
       },
     });
   } catch (error) {

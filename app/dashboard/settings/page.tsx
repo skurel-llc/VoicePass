@@ -16,8 +16,8 @@ export default function SettingsPage() {
         </div>
 
         {/* Tabs */}
-        <div className="border-b border-slate-200">
-          <div className="flex gap-6">
+        <div className="border-b border-slate-200 overflow-x-auto">
+          <div className="flex gap-6 min-w-max">
             {[
               { id: 'profile', label: 'Profile', icon: 'person' },
               { id: 'security', label: 'Security', icon: 'lock' },
@@ -301,7 +301,7 @@ function APITab({ showApiKey, setShowApiKey }: { showApiKey: boolean; setShowApi
 
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">Production API Key</label>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <div className="flex-1 relative">
               <input
                 type={showApiKey ? 'text' : 'password'}
@@ -396,7 +396,7 @@ function WebhooksTab() {
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] p-6">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0 mb-6">
           <h3 className="text-lg font-bold text-slate-900">Webhook Endpoints</h3>
           <button className="px-4 py-2 bg-[#5da28c] text-white rounded-lg hover:bg-[#4a8572] transition-colors text-sm font-bold">
             + Add Endpoint

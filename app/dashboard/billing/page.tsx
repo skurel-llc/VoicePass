@@ -76,7 +76,7 @@ export default function BillingPage() {
       <div className="p-6 md:p-8">
         <div className="max-w-7xl mx-auto flex flex-col gap-6">
           {/* Header */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
             <div>
               <h1 className="text-2xl font-bold text-slate-900">Billing & Credits</h1>
               <p className="text-sm text-slate-500 mt-1">Manage your account balance and transactions</p>
@@ -183,7 +183,7 @@ export default function BillingPage() {
 
           {/* Transaction History */}
           <div className="bg-white rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] overflow-hidden">
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+            <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
               <h3 className="text-lg font-bold text-slate-900">Transaction History</h3>
               <div className="flex items-center gap-2">
                 <select className="px-3 py-1.5 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#5da28c] outline-none">

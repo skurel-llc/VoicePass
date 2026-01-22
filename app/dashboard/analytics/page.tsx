@@ -210,16 +210,16 @@ export default function AnalyticsPage() {
       <div className="p-6 md:p-8">
         <div className="max-w-7xl mx-auto flex flex-col gap-6">
           {/* Header */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
             <div>
               <h1 className="text-2xl font-bold text-slate-900">Analytics</h1>
               <p className="text-sm text-slate-500 mt-1">Detailed insights into your VoicePass performance</p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
               <select
                 value={timeRange}
                 onChange={(e) => setTimeRange(e.target.value)}
-                className="px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#5da28c] outline-none text-sm font-medium"
+                className="w-full sm:w-auto px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#5da28c] outline-none text-sm font-medium"
               >
                 <option value="24h">Last 24 Hours</option>
                 <option value="7d">Last 7 Days</option>
@@ -228,7 +228,7 @@ export default function AnalyticsPage() {
               </select>
               <button 
                 onClick={handleExport}
-                className="flex items-center gap-2 bg-[#5da28c] hover:bg-[#4a8572] text-white text-sm font-bold py-2 px-4 rounded-lg transition-all"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#5da28c] hover:bg-[#4a8572] text-white text-sm font-bold py-2 px-4 rounded-lg transition-all"
               >
                 <span className="material-symbols-outlined text-[18px]">download</span>
                 Export Report

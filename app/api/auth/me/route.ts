@@ -8,7 +8,17 @@ export async function GET() {
     if (!user) {
       return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
     }
-    const userFromDb = await db.vp_user.findUnique({ where: { id: user.id } });
+    const userFromDb = await db.vp_user.findUnique({ 
+      where: { id: user.id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        company: true,
+        phone: true,
+      }
+    });
     return NextResponse.json(userFromDb);
   } catch (error) {
     console.error('Error fetching current user:', error);

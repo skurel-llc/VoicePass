@@ -65,7 +65,8 @@ export async function GET(req: Request) {
     // Status Breakdown
     const statusCounts: Record<string, number> = {};
     callLogs.forEach(log => {
-      statusCounts[log.status] = (statusCounts[log.status] || 0) + 1;
+      const status = log.status || 'UNKNOWN';
+      statusCounts[status] = (statusCounts[status] || 0) + 1;
     });
     const callStatusBreakdown = Object.entries(statusCounts).map(([status, count]) => ({
       status,

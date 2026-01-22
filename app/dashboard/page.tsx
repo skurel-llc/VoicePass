@@ -294,7 +294,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Line Chart */}
             <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)]">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0 mb-6">
                 <div>
                   <h3 className="text-lg font-bold text-slate-900">Call Volume Trends</h3>
                   <p className="text-sm text-slate-500">Voice & OTP delivery over time</p>
@@ -329,7 +329,7 @@ export default function DashboardPage() {
 
             {/* Bar Chart */}
             <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)]">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0 mb-6">
                 <div>
                   <h3 className="text-lg font-bold text-slate-900">Delivery Performance</h3>
                   <p className="text-sm text-slate-500">Success vs Failed counts by day</p>
@@ -360,7 +360,7 @@ export default function DashboardPage() {
 
           {/* Recent Activity Table */}
           <div className="bg-white rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] overflow-hidden">
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+            <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
               <h3 className="text-lg font-bold text-slate-900">Recent Activity</h3>
               <Link href="/dashboard/calls" className="text-sm text-[#5da28c] font-semibold hover:text-[#4a8572] transition-colors">
                 View All Logs

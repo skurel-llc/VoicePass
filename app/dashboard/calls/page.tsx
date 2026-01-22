@@ -87,14 +87,14 @@ export default function CallLogsPage() {
     <div className="p-6 md:p-8">
       <div className="max-w-7xl mx-auto flex flex-col gap-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Call Logs</h1>
             <p className="text-sm text-slate-500 mt-1">View and manage all voice OTP calls</p>
           </div>
           <button 
             onClick={handleExport}
-            className="flex items-center gap-2 bg-[#5da28c] hover:bg-[#4a8572] text-white text-sm font-bold py-2.5 px-4 rounded-lg transition-all"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#5da28c] hover:bg-[#4a8572] text-white text-sm font-bold py-2.5 px-4 rounded-lg transition-all"
           >
             <span className="material-symbols-outlined text-[18px]">download</span>
             Export CSV
