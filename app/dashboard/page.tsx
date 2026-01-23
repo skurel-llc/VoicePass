@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import { Chart, registerables } from 'chart.js';
+import { Phone, TrendingUp, Wallet, Plus, CheckCircle, AlertCircle, AlertTriangle, PhoneCall, PhoneForwarded, Key } from 'lucide-react';
 
 Chart.register(...registerables);
 
@@ -205,10 +206,10 @@ export default function DashboardPage() {
             <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] flex flex-col justify-between group hover:border-[#5da28c]/30 transition-all">
               <div className="flex justify-between items-start mb-4">
                 <div className="bg-[#eef6f4] p-2 rounded-lg text-[#5da28c]">
-                  <span className="material-symbols-outlined">call</span>
+                  <Phone className="size-6" />
                 </div>
                 <div className="flex items-center text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
-                  <span className="material-symbols-outlined text-[14px] mr-1">trending_up</span>
+                  <TrendingUp className="size-3.5 mr-1" />
                   12%
                 </div>
               </div>
@@ -226,7 +227,7 @@ export default function DashboardPage() {
               <div className="absolute top-0 right-0 w-32 h-32 bg-[#5da28c]/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
               <div className="flex justify-between items-start mb-2 relative z-10">
                 <div className="bg-[#eef6f4] p-2 rounded-lg text-[#5da28c]">
-                  <span className="material-symbols-outlined">account_balance_wallet</span>
+                  <Wallet className="size-6" />
                 </div>
               </div>
               <div className="relative z-10">
@@ -236,7 +237,7 @@ export default function DashboardPage() {
                 </h3>
                 <div className="mt-4">
                   <button className="w-full flex items-center justify-center gap-2 bg-[#5da28c] hover:bg-[#4a8572] text-white text-sm font-bold py-2.5 px-4 rounded-lg transition-all shadow-sm shadow-[#5da28c]/20">
-                    <span className="material-symbols-outlined text-[18px]">add</span>
+                    <Plus className="size-[18px]" />
                     Add Credit
                   </button>
                 </div>
@@ -247,7 +248,7 @@ export default function DashboardPage() {
             <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] flex flex-col justify-between hover:border-[#5da28c]/30 transition-all">
               <div className="flex justify-between items-start mb-4">
                 <div className="bg-[#eef6f4] p-2 rounded-lg text-[#5da28c]">
-                  <span className="material-symbols-outlined">check_circle</span>
+                  <CheckCircle className="size-6" />
                 </div>
                 <div className="flex items-center text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
                   Optimal
@@ -271,7 +272,7 @@ export default function DashboardPage() {
             <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] flex flex-col justify-between hover:border-[#5da28c]/30 transition-all">
               <div className="flex justify-between items-start mb-4">
                 <div className="bg-red-50 p-2 rounded-lg text-red-500">
-                  <span className="material-symbols-outlined">error</span>
+                  <AlertCircle className="size-6" />
                 </div>
                 <a className="text-xs font-semibold text-[#5da28c] hover:underline" href="/calls">
                   View logs
@@ -283,7 +284,7 @@ export default function DashboardPage() {
                   {stats?.failedCalls || 0}
                 </h3>
                 <p className="text-red-500 text-xs mt-1 font-medium flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[14px]">warning</span>
+                  <AlertTriangle className="size-[14px]" />
                   {stats?.failedCalls ? 'Requires attention' : 'All good!'}
                 </p>
               </div>
@@ -397,7 +398,7 @@ export default function DashboardPage() {
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            <span className="material-symbols-outlined text-slate-400 text-[18px]">key</span>
+                            <Key className="text-slate-400 size-[18px]" />
                             <span className="text-slate-600">OTP Code</span>
                           </div>
                         </td>
@@ -439,17 +440,13 @@ function LoadingAnimation() {
     <div className="flex items-center justify-center h-full">
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-3">
-          <span className="material-symbols-outlined text-4xl text-[#5da28c] animate-pulse">
-            phone_in_talk
-          </span>
+          <PhoneCall className="size-9 text-[#5da28c] animate-pulse" />
           <div className="flex gap-1">
             <div className="w-2 h-2 bg-[#5da28c] rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
             <div className="w-2 h-2 bg-[#5da28c] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
             <div className="w-2 h-2 bg-[#5da28c] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
           </div>
-          <span className="material-symbols-outlined text-4xl text-[#5da28c] animate-pulse">
-            phone_forwarded
-          </span>
+          <PhoneForwarded className="size-9 text-[#5da28c] animate-pulse" />
         </div>
       </div>
     </div>

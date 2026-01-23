@@ -1,5 +1,6 @@
 "use client";
 import Link from 'next/link';
+import { ArrowRight, AudioWaveform, Banknote, BarChart3, Phone, ShieldCheck } from 'lucide-react';
 
 export default function LandingPage() {
   return (
@@ -10,7 +11,7 @@ export default function LandingPage() {
           {/* Logo */}
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center size-8 sm:size-9 rounded-lg bg-primary/10 text-primary">
-              <span className="material-symbols-outlined text-2xl">graphic_eq</span>
+              <AudioWaveform className="size-6" />
             </div>
             <h1 className="font-display text-xl font-bold tracking-tight text-[#111816] dark:text-white">VoicePass</h1>
           </div>
@@ -71,7 +72,7 @@ export default function LandingPage() {
                 </Link>
                 <button className="h-12 px-8 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-[#111816] dark:text-white font-bold text-base hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-300 flex items-center gap-2">
                   <span>View Documentation</span>
-                  <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                  <ArrowRight className="size-4" />
                 </button>
               </div>
 
@@ -95,7 +96,7 @@ export default function LandingPage() {
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg text-green-700 dark:text-green-400">
-                      <span className="material-symbols-outlined text-xl">call</span>
+                      <Phone className="size-5" />
                     </div>
                     <div>
                       <div className="text-sm font-bold text-gray-900 dark:text-white">Outgoing Call</div>
@@ -142,7 +143,7 @@ export default function LandingPage() {
               {/* Feature 1 */}
               <div className="group p-8 rounded-2xl bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 shadow-soft hover:shadow-lg hover:border-primary/20 transition-all duration-300">
                 <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <span className="material-symbols-outlined text-2xl">analytics</span>
+                  <BarChart3 className="size-6" />
                 </div>
                 <h3 className="text-xl font-bold text-[#111816] dark:text-white mb-3">Real-time Analytics</h3>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
@@ -153,7 +154,7 @@ export default function LandingPage() {
               {/* Feature 2 */}
               <div className="group p-8 rounded-2xl bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 shadow-soft hover:shadow-lg hover:border-primary/20 transition-all duration-300">
                 <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <span className="material-symbols-outlined text-2xl">encrypted</span>
+                  <ShieldCheck className="size-6" />
                 </div>
                 <h3 className="text-xl font-bold text-[#111816] dark:text-white mb-3">Encrypted Delivery</h3>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
@@ -164,7 +165,7 @@ export default function LandingPage() {
               {/* Feature 3 */}
               <div className="group p-8 rounded-2xl bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 shadow-soft hover:shadow-lg hover:border-primary/20 transition-all duration-300">
                 <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <span className="material-symbols-outlined text-2xl">savings</span>
+                  <Banknote className="size-6" />
                 </div>
                 <h3 className="text-xl font-bold text-[#111816] dark:text-white mb-3">Cost-Effective Pricing</h3>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
@@ -222,7 +223,7 @@ export default function LandingPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
               <div className="col-span-2 lg:col-span-2">
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="material-symbols-outlined text-primary text-2xl">graphic_eq</span>
+                  <AudioWaveform className="text-primary size-6" />
                   <span className="font-bold text-xl text-[#111816] dark:text-white">VoicePass</span>
                 </div>
                 <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed max-w-xs mb-6">

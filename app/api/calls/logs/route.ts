@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     const skip = (page - 1) * limit;
 
     // Build filter
-    const where: Prisma.vp_call_logWhereInput = { user_id: user.id };
+    const where: Prisma.vp_call_logWhereInput = { user_id: Number(user.id) };
     if (status) where.status = status;
 
     // Get logs

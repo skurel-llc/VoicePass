@@ -6,13 +6,14 @@ export async function GET() {
   try {
     const user = await requireAuth();
 
-    const balance = await db.vp_credit_balance.findUnique({
-      where: { user_id: user.id },
+    const userData = await db.vp_user.findUnique({
+      where: { id: Number(user.id) },
+      select: { balance: true, last_bal_updated: true }
     });
 
     return NextResponse.json({
-      balance: balance?.balance || 0,
-      lastUpdated: balance?.last_updated,
+      balance: userData?.balance || 0,
+      lastUpdated: userData?.last_bal_updated,
     });
   } catch (error) {
     console.error('Fetch balance error:', error);

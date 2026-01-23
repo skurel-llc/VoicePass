@@ -7,7 +7,7 @@ export async function GET(req: Request) {
   try {
     const user = await getCurrentUser();
     // Fallback to the specific user ID if not logged in (for testing purposes as requested)
-    const userId = user?.id || 'cmkng3gbr0003122pr9yiizlq';
+    const userId = user ? Number(user.id) : 2;
 
     const { searchParams } = new URL(req.url);
     const timeRange = searchParams.get('timeRange') || '7d';
@@ -22,7 +22,7 @@ export async function GET(req: Request) {
       where: {
         user_id: userId,
         created_at: {
-          gte: startDate,
+          gte: startDate.toISOString(),
         },
       },
       orderBy: {
@@ -34,7 +34,7 @@ export async function GET(req: Request) {
     const successfulCalls = callLogs.filter(log => log.status === 'COMPLETED' || log.status === 'ANSWERED').length;
     const successRate = totalCalls > 0 ? (successfulCalls / totalCalls) * 100 : 0;
     
-    const totalDuration = callLogs.reduce((acc, log) => acc + (log.duration || 0), 0);
+    const totalDuration = callLogs.reduce((acc, log) => acc + (parseInt(log.duration || '0') || 0), 0);
     const avgResponseTime = totalCalls > 0 ? totalDuration / totalCalls : 0;
 
     // Peak Hour
@@ -146,23 +146,42 @@ export async function GET(req: Request) {
         });
         volumeTrend = Array.from(hourMap.entries()).map(([label, value]) => ({ label: `${label}:00`, value }));
     } else {
+        const daysMap: Record<string, number> = { '7d': 7, '30d': 30, '90d': 90 };
+        const days = daysMap[timeRange] || 7;
         const dailyCounts: Record<string, number> = {};
-        // Process in reverse (chronological) order for the graph
-        [...callLogs].reverse().forEach(log => {
+
+        // Initialize all days with 0 to ensure chart continuity
+        for (let i = days - 1; i >= 0; i--) {
+            const day = format(subDays(now, i), 'MMM dd');
+            dailyCounts[day] = 0;
+        }
+
+        callLogs.forEach(log => {
              const day = format(new Date(log.created_at), 'MMM dd');
-             dailyCounts[day] = (dailyCounts[day] || 0) + 1;
+             if (dailyCounts[day] !== undefined) {
+                 dailyCounts[day]++;
+             }
         });
         volumeTrend = Object.entries(dailyCounts).map(([label, value]) => ({ label, value }));
     }
 
     // Daily Performance (Success vs Failed)
     const dailyPerfMap: Record<string, { success: number, failed: number }> = {};
-    // Process in reverse (chronological) order
-    [...callLogs].reverse().forEach(log => {
-        const day = format(new Date(log.created_at), 'EEE');
-        if (!dailyPerfMap[day]) dailyPerfMap[day] = { success: 0, failed: 0 };
-        if (log.status === 'COMPLETED' || log.status === 'ANSWERED') dailyPerfMap[day].success++;
-        else if (log.status === 'FAILED') dailyPerfMap[day].failed++;
+    
+    const daysMapPerf: Record<string, number> = { '24h': 1, '7d': 7, '30d': 30, '90d': 90 };
+    const daysPerf = daysMapPerf[timeRange] || 7;
+
+    for (let i = daysPerf - 1; i >= 0; i--) {
+        const day = format(subDays(now, i), 'MMM dd');
+        dailyPerfMap[day] = { success: 0, failed: 0 };
+    }
+
+    callLogs.forEach(log => {
+        const day = format(new Date(log.created_at), 'MMM dd');
+        if (dailyPerfMap[day]) {
+            if (log.status === 'COMPLETED' || log.status === 'ANSWERED') dailyPerfMap[day].success++;
+            else if (log.status === 'FAILED') dailyPerfMap[day].failed++;
+        }
     });
     const dailyPerformance = Object.entries(dailyPerfMap).map(([day, stats]) => ({ day, ...stats }));
 
