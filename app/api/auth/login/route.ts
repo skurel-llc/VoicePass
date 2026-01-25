@@ -19,6 +19,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Check if user is active
+    if (user.is_active === false) {
+      return NextResponse.json(
+        { error: 'Account is disabled' },
+        { status: 403 }
+      );
+    }
+
     // Verify password
     const isValid = await verifyPassword(password, user.password);
     if (!isValid) {
