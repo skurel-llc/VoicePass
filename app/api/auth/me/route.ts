@@ -1,15 +1,17 @@
-import { getCurrentUser } from '@/lib/auth';
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { getCurrentUser } from '@/lib/auth';
 
 export async function GET() {
   try {
     const user = await getCurrentUser();
+
     if (!user) {
-      return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const userFromDb = await db.vp_user.findUnique({ 
-      where: { id: user.id },
+
+    const userFromDb = await db.vp_user.findUnique({
+      where: { id: Number(user.id) },
       select: {
         id: true,
         email: true,
@@ -17,38 +19,16 @@ export async function GET() {
         role: true,
         company: true,
         phone: true,
-      }
+        balance: true,
+      },
     });
+
+    if (!userFromDb) {
+      return NextResponse.json({ error: 'User not found' }, { status: 401 });
+    }
+
     return NextResponse.json(userFromDb);
   } catch (error) {
-    console.error('Error fetching current user:', error);
-    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
-}
-
-export async function PUT(req: Request) {
-    try {
-        const user = await getCurrentUser();
-        if (!user) {
-            return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
-        }
-        
-        const body = await req.json();
-        const { name, email, company, phone } = body;
-
-        const updatedUser = await db.vp_user.update({
-            where: { id: user.id },
-            data: {
-                name,
-                email,
-                company,
-                phone,
-            },
-        });
-
-        return NextResponse.json(updatedUser);
-    } catch (error) {
-        console.error('Error updating user:', error);
-        return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
-    }
 }
