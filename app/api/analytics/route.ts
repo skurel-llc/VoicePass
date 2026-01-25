@@ -40,6 +40,7 @@ export async function GET(req: Request) {
     // Peak Hour
     const hourCounts: Record<number, number> = {};
     callLogs.forEach(log => {
+      if (!log.created_at) return;
       const hour = new Date(log.created_at).getHours();
       hourCounts[hour] = (hourCounts[hour] || 0) + 1;
     });
@@ -76,6 +77,7 @@ export async function GET(req: Request) {
     // Daily Spend Trend
     const dailySpend: Record<string, number> = {};
     callLogs.forEach(log => {
+      if (!log.created_at) return;
       const day = format(new Date(log.created_at), 'EEE');
       dailySpend[day] = (dailySpend[day] || 0) + (log.cost || 0);
     });
@@ -87,6 +89,7 @@ export async function GET(req: Request) {
     // Top Performing Hours
     const hourStats: Record<number, { total: number, success: number }> = {};
     callLogs.forEach(log => {
+      if (!log.created_at) return;
       const hour = new Date(log.created_at).getHours();
       if (!hourStats[hour]) hourStats[hour] = { total: 0, success: 0 };
       hourStats[hour].total++;
@@ -107,7 +110,8 @@ export async function GET(req: Request) {
     // Performance Insights
     const dayStats: Record<string, { total: number; success: number }> = {};
     callLogs.forEach(log => {
-      const day = format(log.created_at, 'EEE');
+      if (!log.created_at) return;
+      const day = format(new Date(log.created_at), 'EEE');
       if (!dayStats[day]) dayStats[day] = { total: 0, success: 0 };
       dayStats[day].total++;
       // @ts-ignore
@@ -141,6 +145,7 @@ export async function GET(req: Request) {
         const hourMap = new Map();
         for(let i=0; i<24; i++) hourMap.set(i, 0);
         callLogs.forEach(log => {
+            if (!log.created_at) return;
             const hour = new Date(log.created_at).getHours();
             hourMap.set(hour, (hourMap.get(hour) || 0) + 1);
         });
@@ -157,6 +162,7 @@ export async function GET(req: Request) {
         }
 
         callLogs.forEach(log => {
+             if (!log.created_at) return;
              const day = format(new Date(log.created_at), 'MMM dd');
              if (dailyCounts[day] !== undefined) {
                  dailyCounts[day]++;
@@ -177,6 +183,7 @@ export async function GET(req: Request) {
     }
 
     callLogs.forEach(log => {
+        if (!log.created_at) return;
         const day = format(new Date(log.created_at), 'MMM dd');
         if (dailyPerfMap[day]) {
             if (log.status === 'COMPLETED' || log.status === 'ANSWERED') dailyPerfMap[day].success++;

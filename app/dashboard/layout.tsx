@@ -209,6 +209,7 @@ export default function DashboardLayout({
 
 function OTPModal({ onClose }: { onClose: () => void }) {
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [otpCode, setOtpCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -222,7 +223,7 @@ function OTPModal({ onClose }: { onClose: () => void }) {
       const res = await fetch('/api/calls/initiate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phoneNumber }),
+        body: JSON.stringify({ phoneNumber, otp: otpCode }),
       });
 
       const data = await res.json();
@@ -270,6 +271,20 @@ function OTPModal({ onClose }: { onClose: () => void }) {
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder="+2348012345678"
+                className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#5da28c] outline-none text-slate-900"
+                required
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2 text-slate-900">
+                OTP Code
+              </label>
+              <input
+                type="text"
+                value={otpCode}
+                onChange={(e) => setOtpCode(e.target.value)}
+                placeholder="123456"
                 className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#5da28c] outline-none text-slate-900"
                 required
               />
