@@ -74,8 +74,6 @@ async function main() {
         answer_time: new Date().toISOString(),
         ring_time: new Date().toISOString(),
         end_at: new Date().toISOString(),
-        callback_url: "https://example.com/webhook",
-        webhook_sent: "true",
       },
     });
   }
