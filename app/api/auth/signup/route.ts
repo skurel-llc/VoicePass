@@ -5,6 +5,13 @@ import { createSession, setSessionCookie } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {
   try {
+    // Self-healing: Ensure is_active column exists
+    try {
+      await db.$executeRaw`ALTER TABLE vp_user ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;`;
+    } catch (e) {
+      console.warn("Schema patch failed (is_active):", e);
+    }
+
     const { email, password, name } = await req.json();
 
     // Check if user exists
@@ -29,6 +36,7 @@ export async function POST(req: NextRequest) {
         password: hashedPassword,
         name,
         role: 'client',
+        is_active: true,
       },
     });
 
@@ -73,10 +81,10 @@ export async function POST(req: NextRequest) {
         phone: user.phone || '',
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Signup error:', error);
     return NextResponse.json(
-      { error: 'Signup failed' },
+      { error: error.message || 'Signup failed' },
       { status: 500 }
     );
   }

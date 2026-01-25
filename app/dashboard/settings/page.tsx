@@ -393,12 +393,25 @@ function NotificationsTab() {
 }
 
 function WebhooksTab() {
+  const [showAddWebhookModal, setShowAddWebhookModal] = useState(false);
+  const [webhookUrl, setWebhookUrl] = useState('');
+
+  const handleAddWebhook = () => {
+    console.log('Adding webhook:', webhookUrl);
+    // Here you would typically make an API call to add the webhook
+    setShowAddWebhookModal(false);
+    setWebhookUrl(''); // Clear the input field
+  };
+
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0 mb-6">
           <h3 className="text-lg font-bold text-slate-900">Webhook Endpoints</h3>
-          <button className="px-4 py-2 bg-[#5da28c] text-white rounded-lg hover:bg-[#4a8572] transition-colors text-sm font-bold">
+          <button
+            onClick={() => setShowAddWebhookModal(true)}
+            className="px-4 py-2 bg-[#5da28c] text-white rounded-lg hover:bg-[#4a8572] transition-colors text-sm font-bold"
+          >
             + Add Endpoint
           </button>
         </div>
@@ -439,13 +452,45 @@ function WebhooksTab() {
             'call.failed',
             'balance.low',
           ].map((event) => (
-            <label key={event} className="flex items-center gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer">
-              <input type="checkbox" className="rounded border-slate-300 text-[#5da28c] focus:ring-[#5da28c]" />
-              <span className="font-mono text-sm text-slate-700">{event}</span>
+            <label key={event} className={`flex items-center gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer ${event !== 'call.completed' ? 'opacity-50 cursor-not-allowed' : ''}`}>
+              <input type="checkbox" className="rounded border-slate-300 text-[#5da28c] focus:ring-[#5da28c]" disabled={event !== 'call.completed'} />
+              <span className={`font-mono text-sm ${event !== 'call.completed' ? 'text-slate-400' : 'text-slate-700'}`}>{event}</span>
             </label>
           ))}
         </div>
       </div>
+
+      {showAddWebhookModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md">
+            <h3 className="text-xl font-bold text-slate-900 mb-4">Add Webhook Endpoint</h3>
+            <p className="text-sm text-slate-600 mb-4">Enter the URL where you want to receive webhook notifications.</p>
+            
+            <input
+              type="url"
+              placeholder="https://your-app.com/webhook"
+              value={webhookUrl}
+              onChange={(e) => setWebhookUrl(e.target.value)}
+              className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#5da28c] focus:border-[#5da28c] outline-none mb-6"
+            />
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => { setShowAddWebhookModal(false); setWebhookUrl(''); }}
+                className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddWebhook}
+                className="px-4 py-2 bg-[#5da28c] text-white rounded-lg hover:bg-[#4a8572] transition-colors font-bold"
+              >
+                Add Webhook
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -20,6 +20,18 @@ interface CallLog {
     ring_time: string;
     end_at: string;
 }
+
+const statusColorMap: { [key: string]: { background: string; text: string; border: string; dot: string } } = {
+    ANSWERED: { background: 'bg-[#5da28c]/10', text: 'text-[#4a8572]', border: 'border-[#5da28c]/20', dot: 'bg-[#5da28c]' },
+    COMPLETED: { background: 'bg-[#5da28c]/10', text: 'text-[#4a8572]', border: 'border-[#5da28c]/20', dot: 'bg-[#5da28c]' }, // Keeping completed green as per user request (not orange)
+    FAILED: { background: 'bg-red-50', text: 'text-red-600', border: 'border-red-100', dot: 'bg-red-500' },
+    NO_ANSWER: { background: 'bg-orange-50', text: 'text-orange-600', border: 'border-orange-100', dot: 'bg-orange-500' },
+    BUSY: { background: 'bg-purple-50', text: 'text-purple-600', border: 'border-purple-100', dot: 'bg-purple-500' },
+    UNAVAILABLE: { background: 'bg-slate-100', text: 'text-slate-600', border: 'border-slate-200', dot: 'bg-slate-500' },
+    INITIATED: { background: 'bg-blue-50', text: 'text-blue-600', border: 'border-blue-100', dot: 'bg-blue-500' },
+    RINGING: { background: 'bg-yellow-50', text: 'text-yellow-600', border: 'border-yellow-100', dot: 'bg-yellow-500' },
+};
+
 function CallDetailsModal({ call, onClose }: { call: CallLog; onClose: () => void }) {
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
@@ -93,7 +105,6 @@ function CallDetailsModal({ call, onClose }: { call: CallLog; onClose: () => voi
     );
 }
 export default function CallLogsPage() {
-    console.log('DATABASE_URL from page:', process.env.DATABASE_URL);
     const [calls, setCalls] = useState<CallLog[]>([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
@@ -218,9 +229,9 @@ export default function CallLogsPage() {
                                 <option value="ALL">All Status</option>
                                 <option value="ANSWERED">Answered</option>
                                 <option value="FAILED">Failed</option>
-                                <option value="UNAVAILABLE">Unavailable</option>
-                                <option value="NO ANSWER">No Answer</option>
+                                <option value="NO_ANSWER">No Answer</option>
                                 <option value="BUSY">Busy</option>
+                                <option value="UNAVAILABLE">Unavailable</option>
                             </select>
                         </div>
                     </div>
@@ -310,18 +321,8 @@ export default function CallLogsPage() {
                                                 {call.duration ? `${call.duration}s` : '-'}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${call.status === 'ANSWERED'
-                                                            ? 'bg-[#5da28c]/10 text-[#4a8572] border border-[#5da28c]/20'
-                                                            : call.status === 'FAILED' || call.status === 'UNAVAILABLE'
-                                                                ? 'bg-red-50 text-red-600 border border-red-100'
-                                                                : 'bg-yellow-50 text-yellow-600 border border-yellow-100'
-                                                    }`}>
-                                                    <span className={`size-1.5 rounded-full ${call.status === 'ANSWERED'
-                                                                ? 'bg-[#5da28c]'
-                                                                : call.status === 'FAILED' || call.status === 'UNAVAILABLE'
-                                                                    ? 'bg-red-500'
-                                                                        : 'bg-yellow-500'
-                                                        }`}></span>
+                                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${statusColorMap[call.status]?.background || 'bg-gray-100'} ${statusColorMap[call.status]?.text || 'text-gray-700'} ${statusColorMap[call.status]?.border || 'border-gray-200'}`}>
+                                                    <span className={`size-1.5 rounded-full ${statusColorMap[call.status]?.dot || 'bg-gray-500'}`}></span>
                                                     {call.status}
                                                 </span>
                                             </td>
