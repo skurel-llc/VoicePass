@@ -6,9 +6,12 @@ const prisma = new PrismaClient();
 
 export async function DELETE(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
     try {
+        const resolvedParams = await context.params;
+        const userId = parseInt(resolvedParams.id);
+
         const currentUser = await getCurrentUser();
         
         if (!currentUser) {
@@ -18,8 +21,6 @@ export async function DELETE(
         if (currentUser.role !== 'admin') {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
-
-        const userId = parseInt(params.id);
 
         // Prevent admins from deleting themselves
         if (userId.toString() === currentUser.id) {

@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState, useCallback } from 'react';
 import { format } from 'date-fns';
-import { Eye, X, Trash2, UserPlus, Shield, ShieldOff, Check } from 'lucide-react';
+import { Eye, X, Trash2, UserPlus, Check } from 'lucide-react';
 import { useUser } from '../../contexts/UserContext';
 
 interface User {
@@ -237,6 +237,89 @@ function UserDetailsModal({ user, onClose, onDataChange }: { user: User; onClose
     );
 }
 
+function CreateUserModal({ onClose, onSuccess }: { onClose: () => void, onSuccess: () => void }) {
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        password: '',
+        company: '',
+        phone_number: '',
+        role: 'user'
+    });
+    const [loading, setLoading] = useState(false);
+
+    async function handleSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const res = await fetch('/api/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            
+            if (res.ok) {
+                onSuccess();
+            } else {
+                const data = await res.json();
+                alert(data.error || 'Failed to create user');
+            }
+        } catch (error) {
+            console.error('Error creating user:', error);
+            alert('Failed to create user');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4">
+                <div className="flex justify-between items-center p-6 border-b border-slate-100">
+                    <h2 className="text-xl font-bold text-slate-800">Create New User</h2>
+                    <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-100 transition-colors">
+                        <X size={20} className="text-slate-500" />
+                    </button>
+                </div>
+                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                            <input type="text" required className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#5da28c] focus:border-[#5da28c] outline-none" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Company</label>
+                            <input type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#5da28c] focus:border-[#5da28c] outline-none" value={formData.company} onChange={e => setFormData({...formData, company: e.target.value})} />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                        <input type="email" required className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#5da28c] focus:border-[#5da28c] outline-none" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
+                            <input type="tel" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#5da28c] focus:border-[#5da28c] outline-none" value={formData.phone_number} onChange={e => setFormData({...formData, phone_number: e.target.value})} />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Role</label>
+                            <select className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#5da28c] focus:border-[#5da28c] outline-none" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})}>
+                                <option value="user">User</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Password</label>
+                        <input type="password" required className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#5da28c] focus:border-[#5da28c] outline-none" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
+                    </div>
+                    <div className="pt-4"><button type="submit" disabled={loading} className="w-full px-4 py-2.5 bg-[#5da28c] text-white rounded-lg hover:bg-[#4a8572] font-bold disabled:opacity-50">{loading ? 'Creating...' : 'Create User'}</button></div>
+                </form>
+            </div>
+        </div>
+    );
+}
+
 export default function UsersPage() {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
@@ -246,6 +329,7 @@ export default function UsersPage() {
     const [roleFilter, setRoleFilter] = useState('ALL');
     const [companyFilter, setCompanyFilter] = useState('');
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
+    const [showCreateModal, setShowCreateModal] = useState(false);
     const currentUser = useUser();
 
     const fetchUsers = useCallback(async () => {
@@ -313,26 +397,7 @@ export default function UsersPage() {
         document.body.removeChild(link);
     }
 
-    async function handleToggleRole(userId: number, currentRole: string) {
-        if (!confirm(`Change user role to ${currentRole === 'admin' ? 'user' : 'admin'}?`)) return;
-        
-        try {
-            const res = await fetch(`/api/users/${userId}/role`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ role: currentRole === 'admin' ? 'user' : 'admin' })
-            });
 
-            if (res.ok) {
-                fetchUsers();
-            } else {
-                alert('Failed to update user role');
-            }
-        } catch (error) {
-            console.error('Error updating role:', error);
-            alert('Failed to update user role');
-        }
-    }
 
     async function handleDeleteUser(userId: number) {
         if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
@@ -363,6 +428,15 @@ export default function UsersPage() {
                         <p className="text-sm text-slate-500 mt-1">View and manage all registered users</p>
                     </div>
                     <div className="flex gap-3">
+                        {currentUser?.role === 'admin' && (
+                            <button
+                                onClick={() => setShowCreateModal(true)}
+                                className="flex items-center justify-center gap-2 bg-[#5da28c] hover:bg-[#4a8572] text-white text-sm font-bold py-2.5 px-4 rounded-lg transition-all"
+                            >
+                                <UserPlus size={18} />
+                                Create User
+                            </button>
+                        )}
                         <button
                             onClick={handleExport}
                             className="flex items-center justify-center gap-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-bold py-2.5 px-4 rounded-lg transition-all"
@@ -551,13 +625,7 @@ export default function UsersPage() {
                                                     </button>
                                                     {currentUser?.role === 'admin' && user.id !== currentUser.id && (
                                                         <>
-                                                            <button 
-                                                                onClick={() => handleToggleRole(user.id, user.role)} 
-                                                                className="text-blue-400 hover:text-blue-600 transition-colors"
-                                                                title={`Make ${user.role === 'admin' ? 'user' : 'admin'}`}
-                                                            >
-                                                                {user.role === 'admin' ? <ShieldOff size={18} /> : <Shield size={18} />}
-                                                            </button>
+                                                            
                                                             <button 
                                                                 onClick={() => handleDeleteUser(user.id)} 
                                                                 className="text-red-400 hover:text-red-600 transition-colors"
@@ -623,6 +691,7 @@ export default function UsersPage() {
                 </div>
             </div>
             {selectedUser && <UserDetailsModal user={selectedUser} onClose={() => setSelectedUser(null)} onDataChange={fetchUsers} />}
+            {showCreateModal && <CreateUserModal onClose={() => setShowCreateModal(false)} onSuccess={() => { setShowCreateModal(false); fetchUsers(); }} />}
         </div>
     );
 }

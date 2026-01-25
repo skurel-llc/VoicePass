@@ -1,6 +1,6 @@
 "use client";
 import Link from 'next/link';
-import { ArrowRight, AudioWaveform, Banknote, BarChart3, Phone, ShieldCheck } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Banknote, BarChart3 } from 'lucide-react';
 
 export default function LandingPage() {
   return (
@@ -9,13 +9,12 @@ export default function LandingPage() {
       <nav className="fixed top-0 left-0 right-0 z-50 glass-nav h-16 sm:h-20 transition-all duration-300">
         <div className="h-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center size-8 sm:size-9 rounded-lg bg-primary/10 text-primary">
-              <AudioWaveform className="size-6" />
-            </div>
-            <h1 className="font-display text-xl font-bold tracking-tight text-[#111816] dark:text-white">VoicePass</h1>
-          </div>
-
+                      <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center size-8 sm:size-9 rounded-lg bg-primary/10 text-primary">
+                        <ShieldCheck className="size-6" />
+                      </div>
+                      <h1 className="font-display text-xl font-bold tracking-tight text-[#111816] dark:text-white">VoicePass</h1>
+                    </div>
           {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-8">
             <Link href="#features" className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary transition-colors">
@@ -63,7 +62,7 @@ export default function LandingPage() {
               </h1>
 
               <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-lg">
-                Reliable, encrypted voice verification calls for your application. Manage logs and billing with our next-gen dashboard.
+                Secure Voice OTP for your applications. Reliable, cost-effective and fraud-resistant verification.
               </p>
 
               <div className="flex flex-wrap gap-4 pt-2">
@@ -89,28 +88,28 @@ export default function LandingPage() {
             {/* Hero Visual */}
             <div className="relative w-full aspect-square lg:aspect-[4/3] rounded-3xl overflow-hidden bg-surface dark:bg-surface-dark border border-gray-100 dark:border-gray-800 shadow-soft group">
               {/* Abstract Visualization */}
-              <div className="absolute inset-0 bg-cover bg-center opacity-20 dark:opacity-10" style={{ backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuA5jurWx7b-6M68uOH0Cv67Gpmfv1MVRBabnVaKspYkIjASpL7vAQ35pbrZmzD9kBWspGE1JFcAN9HqqazBzP80n5T1cVvUHsg_BNrNKAYMluTWkt_Q37OgfG9wMQhJHwPylnJmgprgwNEPEw71npbb_as8R5Fcfk1J5XkccKCeaZvMqFWXdwrzLi_mIrEm7Itp8RFuHc-FKV9sGdTuc5lJGcnQpR_BNHVH2P_8HdYEo-MpRFw58gzyvxjs6drd6_yZm1p5hgFZdrjj')` }}></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-blue-500/10 dark:from-primary/20 dark:to-blue-500/20 opacity-50"></div>
               
               {/* Floating UI Card Mockup */}
               <div className="absolute bottom-8 left-8 right-8 bg-white/90 dark:bg-gray-800/90 backdrop-blur rounded-xl p-6 shadow-xl border border-white/50 dark:border-gray-700/50 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg text-green-700 dark:text-green-400">
-                      <Phone className="size-5" />
+                    <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                      <ShieldCheck className="size-5" />
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-gray-900 dark:text-white">Outgoing Call</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">ID: #8823-99A</div>
+                      <div className="text-sm font-bold text-gray-900 dark:text-white">OTP Verification</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Code: ******</div>
                     </div>
                   </div>
-                  <div className="px-2 py-1 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 text-xs font-bold rounded uppercase">Success</div>
+                  <div className="px-2 py-1 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 text-xs font-bold rounded uppercase">Verified</div>
                 </div>
                 <div className="w-full bg-gray-100 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden">
-                  <div className="bg-primary h-full w-3/4"></div>
+                  <div className="bg-primary h-full w-full"></div>
                 </div>
                 <div className="flex justify-between mt-2 text-xs font-medium text-gray-400 dark:text-gray-500">
-                  <span>Connecting...</span>
-                  <span>00:12</span>
+                  <span>Authentication Successful</span>
+                  <span>00:03</span>
                 </div>
               </div>
             </div>
@@ -148,7 +147,7 @@ export default function LandingPage() {
                 <h3 className="text-xl font-bold text-[#111816] dark:text-white mb-3">Real-time Analytics</h3>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                   Monitor delivery rates, latency, and costs instantly via our websocket-powered dashboard. No more waiting for daily reports.
-                </p>
+                </p>  
               </div>
 
               {/* Feature 2 */}
@@ -158,7 +157,7 @@ export default function LandingPage() {
                 </div>
                 <h3 className="text-xl font-bold text-[#111816] dark:text-white mb-3">Encrypted Delivery</h3>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                  End-to-end encryption for every voice packet. We are SOC2 compliant and ensure your user data never leaves the secure tunnel.
+                  End-to-end encryption for every voice packet. We are SOC2 compliant and ensure your data never leaves the secure tunnel.
                 </p>
               </div>
 
@@ -177,10 +176,10 @@ export default function LandingPage() {
         </section>
 
         {/* Interactive Demo / CTA Section */}
-        <section className="py-24 px-4 sm:px-6">
+        <section className="py-24 px-4 sm:px-6"> 
           <div className="max-w-5xl mx-auto bg-[#111816] dark:bg-gray-900 rounded-3xl overflow-hidden shadow-2xl relative">
             {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-20" style={{backgroundImage: 'radial-gradient(#4ab593 1px, transparent 1px)', backgroundSize: '32px 32px'}}></div>
+            <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#4ab593 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
 
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between p-10 md:p-16 gap-10">
               <div className="flex-1 text-center md:text-left">
@@ -197,7 +196,7 @@ export default function LandingPage() {
               </div>
 
               {/* Code Snippet Visual */}
-              <div className="w-full max-w-md bg-[#1d1f20] dark:bg-gray-950 rounded-xl border border-gray-800 p-6 shadow-2xl font-mono text-xs sm:text-sm">
+              <div className="w-full max-w-md bg-[#1d1f20] dark:bg-gray-950 rounded-xl border border-gray-800 p-6 shadow-2xl font-mono text-xs sm:text-sm"> 
                 <div className="flex gap-2 mb-4">
                   <div className="w-3 h-3 rounded-full bg-red-500"></div>
                   <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
@@ -223,7 +222,7 @@ export default function LandingPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
               <div className="col-span-2 lg:col-span-2">
                 <div className="flex items-center gap-2 mb-4">
-                  <AudioWaveform className="text-primary size-6" />
+                  <ShieldCheck className="text-primary size-6" />
                   <span className="font-bold text-xl text-[#111816] dark:text-white">VoicePass</span>
                 </div>
                 <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed max-w-xs mb-6">

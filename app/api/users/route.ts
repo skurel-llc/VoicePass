@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { getCurrentUser } from '@/lib/auth';
+import { hashPassword } from '@/lib/encryption';
+import { db } from '@/lib/db';
 
 const prisma = new PrismaClient();
 
@@ -41,6 +43,7 @@ export async function GET(req: NextRequest) {
                     updated_at: true,
                     name: true,
                     company: true,
+                    is_active: true,
                 },
                 orderBy: { created_at: 'desc' },
                 skip,
@@ -58,6 +61,7 @@ export async function GET(req: NextRequest) {
             phone_number: user.phone || '',
             role: user.role || 'user',
             balance: user.balance || 0,
+            is_active: user.is_active,
             created_at: user.created_at?.toISOString() || new Date().toISOString(),
             last_login: user.updated_at?.toISOString() || null,
         }));
@@ -74,5 +78,63 @@ export async function GET(req: NextRequest) {
     } catch (error) {
         console.error('Error fetching users:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    }
+}
+
+export async function POST(req: NextRequest) {
+    try {
+        const currentUser = await getCurrentUser();
+        
+        if (!currentUser || currentUser.role !== 'admin') {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const { email, password, name, company, phone_number, role } = await req.json();
+
+        // Check if user exists
+        const existing = await db.vp_user.findUnique({
+          where: { email },
+        });
+
+        if (existing) {
+          return NextResponse.json(
+            { error: 'Email already registered' },
+            { status: 400 }
+          );
+        }
+
+        // Hash password
+        const hashedPassword = await hashPassword(password);
+
+        // Create user
+        const user = await db.vp_user.create({
+          data: {
+            email,
+            password: hashedPassword,
+            name,
+            company,
+            phone: phone_number,
+            role: role || 'user',
+            is_active: true,
+          },
+        });
+
+        return NextResponse.json({
+          success: true,
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            company: user.company,
+            phone_number: user.phone,
+          },
+        });
+    } catch (error: any) {
+        console.error('User creation error:', error);
+        return NextResponse.json(
+            { error: error.message || 'User creation failed' },
+            { status: 500 }
+        );
     }
 }
