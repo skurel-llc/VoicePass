@@ -1,20 +1,41 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { requireAuth } from '@/lib/auth';
+import { getCurrentUser } from '@/lib/auth';
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const user = await requireAuth();
+    const user = await getCurrentUser();
+    if (!user) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-    const userData = await db.vp_user.findUnique({
-      where: { id: Number(user.id) },
-      select: { balance: true, last_bal_updated: true }
-    });
+    const { searchParams } = new URL(req.url);
+    const view = searchParams.get('view');
+    const isAdminView = user.role === 'admin' && view === 'admin';
 
-    return NextResponse.json({
-      balance: userData?.balance || 0,
-      lastUpdated: userData?.last_bal_updated,
-    });
+    if (isAdminView) {
+        const totalBalance = await db.vp_user.aggregate({
+            _sum: {
+                balance: true,
+            },
+        });
+
+        return NextResponse.json({
+            balance: totalBalance._sum.balance || 0,
+            lastUpdated: null,
+        });
+
+    } else {
+        const userData = await db.vp_user.findUnique({
+            where: { id: Number(user.id) },
+            select: { balance: true, last_bal_updated: true }
+        });
+
+        return NextResponse.json({
+            balance: userData?.balance || 0,
+            lastUpdated: userData?.last_bal_updated,
+        });
+    }
   } catch (error) {
     console.error('Fetch balance error:', error);
     return NextResponse.json(

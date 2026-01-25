@@ -14,10 +14,15 @@ export async function GET(req: Request) {
     const limit = parseInt(searchParams.get('limit') || '20');
     const status = searchParams.get('status');
     const search = searchParams.get('search');
+    const view = searchParams.get('view');
+    
+    const isAdminView = user.role === 'admin' && view === 'admin';
 
-    const where: any = {
-      user_id: Number(user.id),
-    };
+    const where: any = {};
+
+    if (!isAdminView) {
+      where.user_id = Number(user.id);
+    }
 
     if (status && status !== 'ALL') {
       where.status = status;
@@ -26,6 +31,14 @@ export async function GET(req: Request) {
     // Fetch logs
     const logs = await db.vp_call_log.findMany({
       where,
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+          }
+        }
+      },
       orderBy: { created_at: 'desc' },
     });
 

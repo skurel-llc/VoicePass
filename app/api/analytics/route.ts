@@ -6,11 +6,20 @@ import { subDays, format } from 'date-fns';
 export async function GET(req: Request) {
   try {
     const user = await getCurrentUser();
-    // Fallback to the specific user ID if not logged in (for testing purposes as requested)
-    const userId = user ? Number(user.id) : 2;
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     const { searchParams } = new URL(req.url);
     const timeRange = searchParams.get('timeRange') || '7d';
+    const view = searchParams.get('view');
+    
+    const isAdminView = user.role === 'admin' && view === 'admin';
+
+    const whereClause: any = {};
+    if (!isAdminView) {
+      whereClause.user_id = Number(user.id);
+    }
     
     const now = new Date();
     let startDate = subDays(now, 7);
@@ -18,13 +27,12 @@ export async function GET(req: Request) {
     if (timeRange === '30d') startDate = subDays(now, 30);
     if (timeRange === '90d') startDate = subDays(now, 90);
 
+    whereClause.created_at = {
+      gte: startDate.toISOString(),
+    };
+
     const callLogs = await db.vp_call_log.findMany({
-      where: {
-        user_id: userId,
-        created_at: {
-          gte: startDate.toISOString(),
-        },
-      },
+      where: whereClause,
       orderBy: {
         created_at: 'desc',
       },

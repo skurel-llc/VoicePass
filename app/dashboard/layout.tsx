@@ -3,14 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-
-// Define SessionUser type locally if it's not exported for client-side use
-interface SessionUser {
-  id: string;
-  email: string;
-  name?: string;
-  role?: string;
-}
+import { UserProvider, SessionUser } from '../contexts/UserContext';
 
 export default function DashboardLayout({
   children,
@@ -48,9 +41,19 @@ export default function DashboardLayout({
     { name: 'Dashboard', href: '/dashboard', icon: 'dashboard' },
     { name: 'Call Logs', href: '/dashboard/calls', icon: 'list_alt' },
     { name: 'Analytics', href: '/dashboard/analytics', icon: 'analytics' },
-    { name: 'Billing', href: '/dashboard/billing', icon: 'credit_card' },
-    { name: 'Settings', href: '/dashboard/settings', icon: 'settings' },
   ];
+
+  if (!loadingUser) {
+    if (user?.role === 'admin') {
+      navigation.push({ name: 'Users', href: '/dashboard/users', icon: 'group' });
+    } else {
+      navigation.push(
+        { name: 'Billing', href: '/dashboard/billing', icon: 'credit_card' },
+        { name: 'Settings', href: '/dashboard/settings', icon: 'settings' }
+      );
+    }
+  }
+
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST' });
     router.push('/login');
@@ -62,7 +65,7 @@ export default function DashboardLayout({
   };
 
   return (
-    <>
+    <UserProvider user={user}>
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
@@ -203,7 +206,7 @@ export default function DashboardLayout({
       {showOTPModal && (
         <OTPModal onClose={() => setShowOTPModal(false)} />
       )}
-    </>
+    </UserProvider>
   );
 }
 

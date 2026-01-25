@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import { Chart, registerables } from 'chart.js';
+import { useUser } from '../contexts/UserContext';
 import { Phone, TrendingUp, Wallet, Plus, CheckCircle, AlertCircle, AlertTriangle, PhoneCall, PhoneForwarded, Key, Eye, X } from 'lucide-react';
 
 Chart.register(...registerables);
@@ -24,6 +25,10 @@ interface RecentCall {
   duration: number | null;
   created_at: string;
   call_id: string;
+  user: {
+    name: string | null;
+    email: string | null;
+  } | null;
 }
 
 const statusColorMap: { [key: string]: { background: string; text: string; border: string; dot: string } } = {
@@ -42,6 +47,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [volumeFilter, setVolumeFilter] = useState('Day');
   const [selectedCall, setSelectedCall] = useState<RecentCall | null>(null);
+  const currentUser = useUser();
   
   // Chart Data State
   const [volumeTrend, setVolumeTrend] = useState<{ label: string, value: number }[]>([]);
@@ -55,10 +61,14 @@ export default function DashboardPage() {
   useEffect(() => {
     async function fetchDashboardData() {
       try {
+        const isAdminView = currentUser?.role === 'admin';
+        const adminQuery = isAdminView ? '?view=admin' : '';
+        const adminAnalyticsQuery = isAdminView ? `&view=admin` : '';
+
         const [logsRes, balanceRes, analyticsRes] = await Promise.all([
-          fetch('/api/calls/logs?limit=5', { cache: 'no-store' }),
-          fetch('/api/billing/balance', { cache: 'no-store' }),
-          fetch(`/api/analytics?timeRange=${volumeFilter === 'Day' ? '24h' : volumeFilter === 'Week' ? '7d' : '30d'}`, { cache: 'no-store' }),
+          fetch(`/api/calls/logs?limit=5${adminQuery.replace('?','&')}`, { cache: 'no-store' }),
+          fetch(`/api/billing/balance${adminQuery}`, { cache: 'no-store' }),
+          fetch(`/api/analytics?timeRange=${volumeFilter === 'Day' ? '24h' : volumeFilter === 'Week' ? '7d' : '30d'}${adminAnalyticsQuery}`, { cache: 'no-store' }),
         ]);
 
         if (!logsRes.ok || !balanceRes.ok || !analyticsRes.ok) {
@@ -99,8 +109,10 @@ export default function DashboardPage() {
         setLoading(false);
       }
     }
-    fetchDashboardData();
-  }, [volumeFilter]);
+    if (currentUser) {
+        fetchDashboardData();
+    }
+  }, [volumeFilter, currentUser]);
 
   // Initialize Volume Chart
   useEffect(() => {
@@ -188,7 +200,7 @@ export default function DashboardPage() {
     }
   }, [deliveryPerformance]);
 
-  if (loading) {
+  if (loading || !currentUser) {
     return <LoadingAnimation />;
   }
 
@@ -248,7 +260,7 @@ export default function DashboardPage() {
                 </div>
               </div>
               <div className="relative z-10">
-                <p className="text-slate-500 text-sm font-medium">Current Balance</p>
+                <p className="text-slate-500 text-sm font-medium">{currentUser.role === 'admin' ? 'Total User Balance' : 'Current Balance'}</p>
                 <h3 className="text-3xl font-bold text-slate-900 mt-1">
                   ₦{(stats?.balance || 0).toFixed(2)}
                 </h3>
@@ -390,6 +402,7 @@ export default function DashboardPage() {
                 <thead className="bg-[#f9fafa] text-slate-500 font-medium border-b border-slate-100">
                   <tr>
                     <th className="px-6 py-4">Time</th>
+                    {currentUser.role === 'admin' && <th className="px-6 py-4">User</th>}
                     <th className="px-6 py-4">Recipient</th>
                     <th className="px-6 py-4">Type</th>
                     <th className="px-6 py-4">Duration</th>
@@ -401,7 +414,7 @@ export default function DashboardPage() {
                 <tbody className="divide-y divide-slate-50">
                   {recentCalls.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-6 py-12 text-center text-slate-400">
+                      <td colSpan={currentUser.role === 'admin' ? 8 : 7} className="px-6 py-12 text-center text-slate-400">
                         No recent calls
                       </td>
                     </tr>
@@ -411,6 +424,11 @@ export default function DashboardPage() {
                         <td className="px-6 py-4 text-slate-600 font-mono text-xs">
                           {format(new Date(call.created_at), 'MMM dd, HH:mm:ss')}
                         </td>
+                        {currentUser.role === 'admin' && (
+                            <td className="px-6 py-4 font-medium text-slate-900">
+                                {call.user?.name || call.user?.email?.split('@')[0] || 'Unknown'}
+                            </td>
+                        )}
                         <td className="px-6 py-4 font-medium text-slate-900">
                           {call.phone_number.length > 8
                             ? `${call.phone_number.slice(0, 4)}••••${call.phone_number.slice(-4)}`

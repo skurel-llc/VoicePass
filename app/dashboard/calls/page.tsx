@@ -1,7 +1,8 @@
 'use client';
 import { useEffect, useState, useCallback } from 'react';
 import { format } from 'date-fns';
-import { Eye, X } from 'lucide-react';
+import { Eye, X, Trash2 } from 'lucide-react';
+import { useUser } from '../../contexts/UserContext';
 
 interface CallLog {
     id: string;
@@ -19,6 +20,10 @@ interface CallLog {
     answer_time: string;
     ring_time: string;
     end_at: string;
+    user: {
+        name: string | null;
+        email: string | null;
+    } | null;
 }
 
 const statusColorMap: { [key: string]: { background: string; text: string; border: string; dot: string } } = {
@@ -111,10 +116,15 @@ export default function CallLogsPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('ALL');
     const [selectedCall, setSelectedCall] = useState<CallLog | null>(null);
+    const user = useUser();
 
     const fetchCalls = useCallback(async () => {
+        if (!user) return;
         try {
             setLoading(true);
+            const isAdminView = user.role === 'admin';
+            const adminQuery = isAdminView ? '&view=admin' : '';
+
             const params = new URLSearchParams({
                 page: page.toString(),
                 limit: '20',
@@ -124,7 +134,7 @@ export default function CallLogsPage() {
                 params.append('status', statusFilter.replace(/ /g, '_').toUpperCase());
             }
 
-            const res = await fetch(`/api/calls/logs?${params}`, { cache: 'no-store' });
+            const res = await fetch(`/api/calls/logs?${params}${adminQuery}`, { cache: 'no-store' });
             const data = await res.json();
 
             const transformedLogs = (data.logs || []).map((log: CallLog) => {
@@ -145,7 +155,7 @@ export default function CallLogsPage() {
             console.error('Error fetching calls:', error);
             setLoading(false);
         }
-    }, [page, statusFilter]);
+    }, [page, statusFilter, user]);
 
     useEffect(() => {
         fetchCalls();
@@ -161,14 +171,23 @@ export default function CallLogsPage() {
 
     function handleExport() {
         const headers = ['Time', 'Call ID', 'Phone Number', 'Duration', 'Status', 'Cost'];
-        const rows = calls.map(call => [
-            format(new Date(call.created_at), 'yyyy-MM-dd HH:mm:ss'),
-            call.call_id,
-            call.phone_number,
-            call.duration ? `00:${String(call.duration).padStart(2, '0')}` : '00:00',
-            call.status.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-            call.cost.toFixed(2)
-        ]);
+        if (user?.role === 'admin') {
+            headers.splice(1, 0, 'User');
+        }
+        const rows = calls.map(call => {
+            const baseRow = [
+                format(new Date(call.created_at), 'yyyy-MM-dd HH:mm:ss'),
+                call.call_id,
+                call.phone_number,
+                call.duration ? `00:${String(call.duration).padStart(2, '0')}` : '00:00',
+                call.status.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+                call.cost.toFixed(2)
+            ];
+            if (user?.role === 'admin') {
+                baseRow.splice(1, 0, call.user?.name || call.user?.email || '');
+            }
+            return baseRow;
+        });
 
         const csvContent = [
             headers.join(','),
@@ -186,13 +205,25 @@ export default function CallLogsPage() {
         document.body.removeChild(link);
     }
 
+    if (loading || !user) {
+        return (
+            <div className="flex items-center justify-center h-full">
+                <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-[#5da28c] rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-[#5da28c] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-[#5da28c] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="p-6 md:p-8">
             <div className="max-w-7xl mx-auto flex flex-col gap-6">
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-900">Call Logs</h1>
+                        <h1 className="text-2xl font-bold text-slate-900">Call Logs {user.role === 'admin' && '(Admin View)'}</h1>
                         <p className="text-sm text-slate-500 mt-1">View and manage all voice OTP calls</p>
                     </div>
                     <button
@@ -286,6 +317,7 @@ export default function CallLogsPage() {
                             <thead className="bg-[#f9fafa] text-slate-500 font-medium border-b border-slate-100">
                                 <tr>
                                     <th className="px-6 py-4">Time</th>
+                                    {user.role === 'admin' && <th className="px-6 py-4">User</th>}
                                     <th className="px-6 py-4">Call ID</th>
                                     <th className="px-6 py-4">Phone Number</th>
                                     <th className="px-6 py-4">Duration</th>
@@ -297,7 +329,7 @@ export default function CallLogsPage() {
                             <tbody className="divide-y divide-slate-50">
                                 {loading ? (
                                     <tr>
-                                        <td colSpan={7} className="px-6 py-12 text-center">
+                                        <td colSpan={user.role === 'admin' ? 8 : 7} className="px-6 py-12 text-center">
                                             <div className="flex items-center justify-center gap-2">
                                                 <div className="w-2 h-2 bg-[#5da28c] rounded-full animate-bounce"></div>
                                                 <div className="w-2 h-2 bg-[#5da28c] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
@@ -307,7 +339,7 @@ export default function CallLogsPage() {
                                     </tr>
                                 ) : filteredCalls.length === 0 ? (
                                     <tr>
-                                        <td colSpan={7} className="px-6 py-12 text-center">
+                                        <td colSpan={user.role === 'admin' ? 8 : 7} className="px-6 py-12 text-center">
                                             <div className="flex flex-col items-center gap-3">
                                                 <span className="material-symbols-outlined text-6xl text-slate-300">call_log</span>
                                                 <p className="text-slate-500 font-medium">No call logs found</p>
@@ -321,6 +353,11 @@ export default function CallLogsPage() {
                                             <td className="px-6 py-4 text-slate-600 font-mono text-xs">
                                                 {format(new Date(call.created_at), 'MMM dd, HH:mm:ss')}
                                             </td>
+                                            {user.role === 'admin' && (
+                                                <td className="px-6 py-4 font-medium text-slate-900">
+                                                    {call.user?.name || call.user?.email?.split('@')[0] || 'Unknown'}
+                                                </td>
+                                            )}
                                             <td className="px-6 py-4 font-mono text-xs text-slate-700">
                                                 {call.call_id ? `${call.call_id.slice(0, 12)}...` : '-'}
                                             </td>
@@ -342,10 +379,15 @@ export default function CallLogsPage() {
                                             <td className="px-6 py-4 text-right font-mono text-slate-900 font-medium">
                                                 ₦{call.cost.toFixed(2)}
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-6 py-4 flex items-center gap-2">
                                                 <button onClick={() => setSelectedCall(call)} className="text-slate-400 hover:text-slate-600 transition-colors">
                                                     <Eye size={20} />
                                                 </button>
+                                                {user?.role === 'admin' && (
+                                                <button onClick={() => alert(`Deleting ${call.id}`)} className="text-red-400 hover:text-red-600 transition-colors">
+                                                    <Trash2 size={20} />
+                                                </button>
+                                                )}
                                             </td>
                                         </tr>
                                     ))

@@ -21,7 +21,27 @@ async function main() {
 
   console.log("\n🌱 Seeding database with fresh data...");
   
-  // 1. Create the Main Test User (Login User)
+  // 1. Create Admin User
+  const adminPasswordHash = await hash("admin123", 10);
+  const adminUser = await prisma.vp_user.create({
+    data: {
+      email: "admin@voicepass.com",
+      password: adminPasswordHash,
+      name: "System Admin",
+      role: "admin",
+      balance: 10000.00,
+      is_active: true,
+      api_key: "vp_live_admin_key_999",
+    },
+  });
+
+  console.log("\n=================================================");
+  console.log("👤 ADMIN USER CREATED");
+  console.log(`   Email:   admin@voicepass.com`);
+  console.log(`   Pass:    admin123`);
+  console.log("=================================================");
+
+  // 2. Create the Main Test User (Regular User)
   // We use a fixed API key so you can easily copy it for testing
   const testUserApiKey = "vp_test_key_123456789";
   const passwordHash = await hash("password123", 10);
@@ -31,7 +51,7 @@ async function main() {
       email: "test@voicepass.com",
       password: passwordHash,
       name: "Test User",
-      role: "admin",
+      role: "user",
       balance: 5000.00,
       is_active: true,
       api_key: testUserApiKey,
@@ -47,7 +67,7 @@ async function main() {
   console.log(`   Balance: ${testUser.balance}`);
   console.log("=================================================\n");
 
-  // 2. Create 10 Transactions for the Test User
+  // 3. Create 10 Transactions for the Test User
   console.log(`📝 Creating 10 transactions for User #${testUser.id}...`);
   for (let t = 1; t <= 10; t++) {
     await prisma.vp_transactions.create({
@@ -62,7 +82,7 @@ async function main() {
     });
   }
 
-  // 3. Create 10 Call Logs for the Test User
+  // 4. Create 10 Call Logs for the Test User
   console.log(`📞 Creating 10 call logs for User #${testUser.id}...`);
   for (let c = 1; c <= 10; c++) {
     await prisma.vp_call_log.create({
@@ -85,7 +105,7 @@ async function main() {
     });
   }
 
-  // 4. Create 2 Extra Dummy Users (to make 3 total)
+  // 5. Create 2 Extra Dummy Users (to make 3 total)
   console.log("👥 Creating 2 extra dummy users...");
   for (let i = 1; i <= 2; i++) {
     await prisma.vp_user.create({

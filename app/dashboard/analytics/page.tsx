@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Chart, registerables } from 'chart.js';
+import { useUser } from '../../contexts/UserContext';
 
 Chart.register(...registerables);
 
@@ -17,6 +18,7 @@ const statusBgColorMap: { [key: string]: string } = {
 
 export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useState('7d');
+  const currentUser = useUser();
   // State for dynamic data (initialize as empty or with default structure)
   const [kpiData, setKpiData] = useState({
     successRate: 'N/A',
@@ -44,10 +46,13 @@ export default function AnalyticsPage() {
 
   useEffect(() => {
     async function fetchData() {
+      if (!currentUser) return;
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`/api/analytics?timeRange=${timeRange}`);
+        const isAdminView = currentUser.role === 'admin';
+        const adminQuery = isAdminView ? '&view=admin' : '';
+        const response = await fetch(`/api/analytics?timeRange=${timeRange}${adminQuery}`);
         if (!response.ok) {
           throw new Error('Failed to fetch analytics data');
         }
@@ -76,7 +81,7 @@ export default function AnalyticsPage() {
       }
     }
     fetchData();
-  }, [timeRange]);
+  }, [timeRange, currentUser]);
 
   useEffect(() => {
     if (hourlyChartInstance.current) {
@@ -208,7 +213,7 @@ export default function AnalyticsPage() {
     document.body.removeChild(link);
   }
 
-  if (loading) {
+  if (loading || !currentUser) {
     return <LoadingAnimation />;
   }
 
@@ -229,8 +234,8 @@ export default function AnalyticsPage() {
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">Analytics</h1>
-              <p className="text-sm text-slate-500 mt-1">Detailed insights into your VoicePass performance</p>
+              <h1 className="text-2xl font-bold text-slate-900">Analytics {currentUser.role === 'admin' && '(Admin View)'}</h1>
+              <p className="text-sm text-slate-500 mt-1">Detailed insights into VoicePass performance</p>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
               <select
