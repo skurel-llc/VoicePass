@@ -4,7 +4,7 @@ import { getCurrentUser } from '@/lib/auth';
 
 export async function POST(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params: paramsPromise }: { params: Promise<{ id: string }> }
 ) {
     try {
         const currentUser = await getCurrentUser();
@@ -13,9 +13,8 @@ export async function POST(
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const url = new URL(req.url);
-        const pathSegments = url.pathname.split('/');
-        const userId = parseInt(pathSegments[3]);
+        const resolvedParams = await paramsPromise;
+        const userId = parseInt(resolvedParams.id);
 
         const { amount } = await req.json();
 

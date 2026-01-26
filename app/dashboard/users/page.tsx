@@ -623,7 +623,7 @@ export default function UsersPage() {
                                                     >
                                                         <Eye size={18} />
                                                     </button>
-                                                    {currentUser?.role === 'admin' && user.id !== currentUser.id && (
+                                                    {currentUser?.role === 'admin' && user.id !== parseInt(currentUser.id) && (
                                                         <>
                                                             
                                                             <button 
