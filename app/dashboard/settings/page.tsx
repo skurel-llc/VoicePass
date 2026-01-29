@@ -127,12 +127,6 @@ function ProfileTab() {
             <div className="size-20 rounded-full bg-gradient-to-br from-[#5da28c] to-[#4a8572] flex items-center justify-center text-white text-2xl font-bold">
               {formData.name.charAt(0).toUpperCase()}
             </div>
-            <div>
-              <button className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors text-sm font-medium">
-                Change Avatar
-              </button>
-              <p className="text-xs text-slate-500 mt-2">JPG, PNG or GIF (max. 2MB)</p>
-            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

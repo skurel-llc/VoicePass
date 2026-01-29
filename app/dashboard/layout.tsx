@@ -181,9 +181,6 @@ export default function DashboardLayout({
              <button className="md:hidden p-2 text-slate-500" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
                 <span className="material-symbols-outlined">menu</span>
               </button>
-              <span className="text-slate-400 hidden md:inline">Home</span>
-              <span className="material-symbols-outlined text-slate-300 mx-2 text-[16px] hidden md:inline">chevron_right</span>
-              <span className="font-semibold text-slate-800">Dashboard Overview</span>
             </div>
 
             {/* Right Actions */}

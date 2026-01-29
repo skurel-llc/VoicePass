@@ -26,7 +26,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const callCost = 10.0; // Fixed cost per call for now
+    const callCost = 3.5; // Fixed cost per call for now
 
     if ((dbUser.balance || 0) < callCost) {
       return NextResponse.json({ error: 'Insufficient balance' }, { status: 402 });

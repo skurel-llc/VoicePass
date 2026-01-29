@@ -11,6 +11,7 @@ export interface SessionUser {
   company?: string;
   phone?: string;
   role: string;
+  apiKey?: string;
 }
 
 export function createSession(user: SessionUser): string {

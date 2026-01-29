@@ -32,3 +32,38 @@ export async function GET() {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
+
+export async function PUT(req: Request) {
+  try {
+    const user = await getCurrentUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const { name, company, phone } = body;
+
+    const updatedUser = await db.vp_user.update({
+      where: { id: Number(user.id) },
+      data: {
+        name,
+        company,
+        phone,
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        company: true,
+        phone: true,
+        balance: true,
+      },
+    });
+
+    return NextResponse.json(updatedUser);
+  } catch (error) {
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}

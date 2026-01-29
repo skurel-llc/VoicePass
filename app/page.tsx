@@ -65,7 +65,7 @@ export default function VoicePassLanding() {
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-6 bg-gradient-to-br from-slate-50 to-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl -translate-y-1/2 trwhanslate-x-1/2" />
         
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center relative z-10">
           <div>
@@ -73,8 +73,7 @@ export default function VoicePassLanding() {
               Voice OTP <span className="text-primary">Authentication</span> System
             </h1>
             <p className="text-xl text-slate-600 mb-8 leading-relaxed">
-              Secure authentication via automated voice calls. 30% cheaper than SMS, 
-              fraud-resistant, and 95%+ delivery success. No internet required.
+              Secure authentication via automated voice calls. 30% cheaper than SMS.
             </p>
             <div className="flex flex-wrap gap-4 mb-12">
               <Link href="/signup" className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition-all hover:shadow-lg">
@@ -330,44 +329,6 @@ export default function VoicePassLanding() {
                   </tr>
                 </tbody>
               </table>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Savings Calculator */}
-      <section className="py-20 px-6 bg-gradient-to-br from-slate-50 to-white">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-slate-900 mb-4">Calculate Your Savings</h2>
-            <p className="text-lg text-slate-600">
-              See how much you'll save by switching to VoicePass authentication
-            </p>
-          </div>
-          
-          <div className="bg-white rounded-2xl p-10 shadow-lg">
-            <h3 className="text-2xl font-bold text-center text-slate-900 mb-10">
-              Cost Comparison: 1 Million OTP Authentications
-            </h3>
-            
-            <div className="grid md:grid-cols-2 gap-6 mb-10">
-              <div className="bg-red-50 rounded-2xl p-8 text-center border-2 border-red-200">
-                <div className="text-sm font-bold text-red-600 uppercase tracking-wider mb-3">SMS OTP</div>
-                <div className="text-5xl font-bold text-red-600 mb-2">₦5M</div>
-                <div className="text-sm text-slate-600">1,000,000 × ₦5.0</div>
-              </div>
-              
-              <div className="bg-primary-light rounded-2xl p-8 text-center border-2 border-primary">
-                <div className="text-sm font-bold text-primary uppercase tracking-wider mb-3">VoicePass</div>
-                <div className="text-5xl font-bold text-primary mb-2">₦3.5M</div>
-                <div className="text-sm text-slate-600">1,000,000 × ₦3.5</div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-r from-primary to-primary-dark rounded-2xl p-10 text-center text-white">
-              <h3 className="text-2xl font-semibold mb-3">Total Annual Savings</h3>
-              <div className="text-6xl font-bold mb-3">₦1.5M</div>
-              <p className="text-white/90">Pure operational savings with better reliability and security</p>
             </div>
           </div>
         </div>
