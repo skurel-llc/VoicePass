@@ -265,10 +265,12 @@ export default function DashboardPage() {
                   ₦{(stats?.balance || 0).toFixed(2)}
                 </h3>
                 <div className="mt-4">
+                  <Link href='/dashboard/billing'>
                   <button className="w-full flex items-center justify-center gap-2 bg-[#5da28c] hover:bg-[#4a8572] text-white text-sm font-bold py-2.5 px-4 rounded-lg transition-all shadow-sm shadow-[#5da28c]/20">
                     <Plus className="size-[18px]" />
                     Add Credit
                   </button>
+                  </Link>
                 </div>
               </div>
             </div>

@@ -150,7 +150,7 @@ export default function BillingPage() {
                 </span>
               </div>
               <p className="text-slate-500 text-sm font-medium">Avg. Cost per Call</p>
-              <h3 className="text-3xl font-bold text-slate-900 mt-1">₦3.50</h3>
+              <h3 className="text-3xl font-bold text-slate-900 mt-1">₦3.80</h3>
               <p className="text-slate-400 text-xs mt-1">For successful calls</p>
             </div>
           </div>
@@ -189,7 +189,7 @@ export default function BillingPage() {
                     </div>
                   )}
                   <div className="text-xs text-slate-500 mt-2">
-                    ~{Math.floor(pkg.amount / 3.5)} calls
+                    ~{Math.floor(pkg.amount / 3.8)} calls
                   </div>
                 </button>
               ))}
@@ -356,7 +356,7 @@ function TopUpModal({ onClose, onSuccess, initialAmount }: { onClose: () => void
             <div className="flex items-center justify-between text-sm mb-2">
               <span className="text-slate-600">Estimated Calls</span>
               <span className="font-semibold text-slate-900">
-                ~{amount ? Math.floor(parseFloat(amount) / 3.5) : 0}
+                ~{amount ? Math.floor(parseFloat(amount) / 3.8) : 0}
               </span>
             </div>
             <div className="border-t border-slate-200 pt-2 mt-2">

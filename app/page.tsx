@@ -94,7 +94,7 @@ export default function VoicePassLanding() {
                 <div className="text-sm text-slate-600">Delivery Success</div>
               </div>
               <div>
-                <div className="text-4xl font-bold text-primary mb-1">₦3.5</div>
+                <div className="text-4xl font-bold text-primary mb-1">₦3.8</div>
                 <div className="text-sm text-slate-600">Per Authentication</div>
               </div>
             </div>
@@ -204,7 +204,7 @@ export default function VoicePassLanding() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2 text-green-600 font-semibold">
                         <CheckCircle2 className="w-5 h-5" />
-                        <span>₦3.5</span>
+                        <span>₦3.8</span>
                       </div>
                     </td>
                   </tr>
@@ -352,7 +352,7 @@ export default function VoicePassLanding() {
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-3">30-55% Lower Cost</h3>
               <p className="text-slate-600 text-sm leading-relaxed">
-                ₦3.5 vs ₦5-8 for SMS. Pay only for connected calls with no wasted spend on failures.
+                ₦3.8 vs ₦5-8 for SMS. Pay only for connected calls with no wasted spend on failures.
               </p>
             </div>
             
@@ -529,7 +529,7 @@ export default function VoicePassLanding() {
   "event": "call.answered",
   "call_id": "VPC-20240129-ABC123",
   "duration": 12,
-  "cost": 3.5,
+  "cost": 3.8,
   "timestamp": "2024-01-29T14:30:12Z"
 }`}
                     </pre>
@@ -631,7 +631,7 @@ export default function VoicePassLanding() {
   "phone_number": "+234801****678",
   "status": "answered",
   "duration": 12,
-  "cost": 3.5,
+  "cost": 3.8,
   "created_at": "2024-01-29T14:30:00Z",
   "completed_at": "2024-01-29T14:30:12Z"
 }`}
@@ -753,9 +753,9 @@ export default function VoicePassLanding() {
             Join leading banks, fintechs, and enterprises using VoicePass
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <a href="tel:08069335817" className="px-8 py-4 bg-white text-primary rounded-lg font-semibold hover:bg-slate-100 transition-all shadow-lg">
-              Contact Sales: 08069335817
-            </a>
+            <Link href="/signup" className="px-8 py-4 bg-white text-primary rounded-lg font-semibold hover:bg-slate-100 transition-all shadow-lg">
+              Get Started
+            </Link>
             <a href="#docs" className="px-8 py-4 border-2 border-white text-white rounded-lg font-semibold hover:bg-white/10 transition-all">
               View Documentation
             </a>
