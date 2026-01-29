@@ -449,7 +449,7 @@ export default function UsersPage() {
 
                 {/* Filters */}
                 <div className="bg-white rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {/* Search */}
                         <div className="md:col-span-1">
                             <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -553,20 +553,20 @@ export default function UsersPage() {
                         <table className="w-full text-left text-sm">
                             <thead className="bg-[#f9fafa] text-slate-500 font-medium border-b border-slate-100">
                                 <tr>
-                                    <th className="px-6 py-4">Name</th>
-                                    <th className="px-6 py-4">Email</th>
-                                    <th className="px-6 py-4">Company</th>
-                                    <th className="px-6 py-4">Role</th>
-                                    <th className="px-6 py-4">Status</th>
-                                    <th className="px-6 py-4 text-right">Balance</th>
-                                    <th className="px-6 py-4">Joined</th>
-                                    <th className="px-6 py-4">Actions</th>
+                                    <th className="px-4 py-3 md:px-6 md:py-4">Name</th>
+                                    <th className="px-4 py-3 md:px-6 md:py-4">Email</th>
+                                    <th className="px-4 py-3 md:px-6 md:py-4">Company</th>
+                                    <th className="px-4 py-3 md:px-6 md:py-4">Role</th>
+                                    <th className="px-4 py-3 md:px-6 md:py-4">Status</th>
+                                    <th className="px-4 py-3 md:px-6 md:py-4 text-right">Balance</th>
+                                    <th className="px-4 py-3 md:px-6 md:py-4">Joined</th>
+                                    <th className="px-4 py-3 md:px-6 md:py-4">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50">
                                 {loading ? (
                                     <tr>
-                                        <td colSpan={8} className="px-6 py-12 text-center">
+                                        <td colSpan={8} className="px-4 py-12 md:px-6 text-center">
                                             <div className="flex items-center justify-center gap-2">
                                                 <div className="w-2 h-2 bg-[#5da28c] rounded-full animate-bounce"></div>
                                                 <div className="w-2 h-2 bg-[#5da28c] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
@@ -576,7 +576,7 @@ export default function UsersPage() {
                                     </tr>
                                 ) : filteredUsers.length === 0 ? (
                                     <tr>
-                                        <td colSpan={8} className="px-6 py-12 text-center">
+                                        <td colSpan={8} className="px-4 py-12 md:px-6 text-center">
                                             <div className="flex flex-col items-center gap-3">
                                                 <span className="material-symbols-outlined text-6xl text-slate-300">group</span>
                                                 <p className="text-slate-500 font-medium">No users found</p>
@@ -587,34 +587,34 @@ export default function UsersPage() {
                                 ) : (
                                     filteredUsers.map((user) => (
                                         <tr key={user.id} className="group hover:bg-slate-50 transition-colors">
-                                            <td className="px-6 py-4 font-medium text-slate-900">
+                                            <td className="px-4 py-3 md:px-6 md:py-4 font-medium text-slate-900">
                                                 {user.name || user.email.split('@')[0]}
                                             </td>
-                                            <td className="px-6 py-4 font-medium text-slate-900">
+                                            <td className="px-4 py-3 md:px-6 md:py-4 font-medium text-slate-900">
                                                 {user.email}
                                             </td>
-                                            <td className="px-6 py-4 text-slate-700">
+                                            <td className="px-4 py-3 md:px-6 md:py-4 text-slate-700">
                                                 {user.company || '-'}
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 py-3 md:px-6 md:py-4">
                                                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${roleColorMap[user.role]?.background || 'bg-gray-100'} ${roleColorMap[user.role]?.text || 'text-gray-700'} ${roleColorMap[user.role]?.border || 'border-gray-200'}`}>
                                                     <span className={`size-1.5 rounded-full ${roleColorMap[user.role]?.dot || 'bg-gray-500'}`}></span>
                                                     <span className="capitalize">{user.role}</span>
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 py-3 md:px-6 md:py-4">
                                                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${user.is_active ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-red-50 text-red-700 border border-red-100'}`}>
                                                     <span className={`size-1.5 rounded-full ${user.is_active ? 'bg-green-500' : 'bg-red-500'}`}></span>
                                                     {user.is_active ? 'Active' : 'Inactive'}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 text-right font-mono text-slate-900 font-medium">
+                                            <td className="px-4 py-3 md:px-6 md:py-4 text-right font-mono text-slate-900 font-medium">
                                                 ₦{user.balance.toFixed(2)}
                                             </td>
-                                            <td className="px-6 py-4 text-slate-600 font-mono text-xs">
+                                            <td className="px-4 py-3 md:px-6 md:py-4 text-slate-600 font-mono text-xs">
                                                 {format(new Date(user.created_at), 'MMM dd, yyyy')}
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 py-3 md:px-6 md:py-4">
                                                 <div className="flex items-center gap-2">
                                                     <button 
                                                         onClick={() => setSelectedUser(user)} 

@@ -37,6 +37,7 @@ const statusColorMap: { [key: string]: { background: string; text: string; borde
 };
 
 function CallDetailsModal({ call, onClose }: { call: CallLog; onClose: () => void }) {
+    const user = useUser();
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4">
@@ -47,6 +48,14 @@ function CallDetailsModal({ call, onClose }: { call: CallLog; onClose: () => voi
                     </button>
                 </div>
                 <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+                    <div className="space-y-1">
+                        <p className="text-slate-500 font-medium">Internal ID</p>
+                        <p className="text-slate-800 font-mono text-xs">{call.id}</p>
+                    </div>
+                    <div className="space-y-1">
+                        <p className="text-slate-500 font-medium">User ID</p>
+                        <p className="text-slate-800 font-mono text-xs">{call.user_id}</p>
+                    </div>
                     <div className="space-y-1">
                         <p className="text-slate-500 font-medium">Call ID</p>
                         <p className="text-slate-800 font-mono text-xs">{call.call_id}</p>
@@ -95,11 +104,24 @@ function CallDetailsModal({ call, onClose }: { call: CallLog; onClose: () => voi
                         <p className="text-slate-800 text-xs">{call.answer_time ? format(new Date(call.answer_time), 'MMM dd, yyyy HH:mm:ss') : '-'}</p>
                     </div>
                     <div className="space-y-1">
+                        <p className="text-slate-500">Ring Time</p>
+                        <p className="text-slate-800 text-xs">{call.ring_time ? format(new Date(call.ring_time), 'MMM dd, yyyy HH:mm:ss') : '-'}</p>
+                    </div>
+                    <div className="space-y-1">
                         <p className="text-slate-500">End Time</p>
                         <p className="text-slate-800 text-xs">{call.end_at ? format(new Date(call.end_at), 'MMM dd, yyyy HH:mm:ss') : '-'}</p>
                     </div>
                 </div>
-                <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 text-right rounded-b-xl">
+                <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center rounded-b-xl">
+                    {user?.role === 'admin' ? (
+                        <button 
+                            onClick={() => alert(`Deleting ${call.id}`)} 
+                            className="px-4 py-2 bg-red-50 text-red-600 border border-red-100 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors flex items-center gap-2"
+                        >
+                            <Trash2 size={16} />
+                            Delete Log
+                        </button>
+                    ) : <div></div>}
                     <button onClick={onClose} className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
                         Close
                     </button>
@@ -114,6 +136,7 @@ export default function CallLogsPage() {
     const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
+    const [userSearchTerm, setUserSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('ALL');
     const [selectedCall, setSelectedCall] = useState<CallLog | null>(null);
     const user = useUser();
@@ -161,10 +184,19 @@ export default function CallLogsPage() {
         fetchCalls();
     }, [fetchCalls]);
     
-    const filteredCalls = calls.filter(call =>
-        (call.phone_number && call.phone_number.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (call.call_id && call.call_id.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    const filteredCalls = calls.filter(call => {
+        const matchesSearch = (call.phone_number && call.phone_number.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (call.call_id && call.call_id.toLowerCase().includes(searchTerm.toLowerCase()));
+
+        if (user?.role !== 'admin') return matchesSearch;
+
+        const matchesUser = !userSearchTerm || (call.user && (
+            (call.user.name && call.user.name.toLowerCase().includes(userSearchTerm.toLowerCase())) ||
+            (call.user.email && call.user.email.toLowerCase().includes(userSearchTerm.toLowerCase()))
+        ));
+
+        return matchesSearch && matchesUser;
+    });
 
 
     const totalPages = Math.ceil(total / 20);
@@ -218,7 +250,7 @@ export default function CallLogsPage() {
     }
 
     return (
-        <div className="p-6 md:p-8">
+        <div className="p-4 md:p-8">
             <div className="max-w-7xl mx-auto flex flex-col gap-6">
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
@@ -237,9 +269,9 @@ export default function CallLogsPage() {
 
                 {/* Filters */}
                 <div className="bg-white rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {/* Search */}
-                        <div className="md:col-span-2">
+                        <div className={user.role === 'admin' ? "sm:col-span-1" : "sm:col-span-2 md:col-span-2"}>
                             <label className="block text-sm font-medium text-slate-700 mb-2">
                                 Search
                             </label>
@@ -256,6 +288,22 @@ export default function CallLogsPage() {
                                 />
                             </div>
                         </div>
+
+                        {/* User Filter (Admin only) */}
+                        {user.role === 'admin' && (
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">
+                                    Filter by User
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="Name or Email..."
+                                    value={userSearchTerm}
+                                    onChange={(e) => setUserSearchTerm(e.target.value)}
+                                    className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#5da28c] focus:border-[#5da28c] outline-none transition-all"
+                                />
+                            </div>
+                        )}
 
                         {/* Status Filter */}
                         <div>
@@ -278,13 +326,21 @@ export default function CallLogsPage() {
                     </div>
 
                     {/* Active Filters */}
-                    {(searchTerm || statusFilter !== 'ALL') && (
+                    {(searchTerm || statusFilter !== 'ALL' || userSearchTerm) && (
                         <div className="flex items-center gap-2 mt-4 pt-4 border-t border-slate-100">
                             <span className="text-sm text-slate-600">Active filters:</span>
                             {searchTerm && (
                                 <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 text-slate-700 text-xs font-medium rounded-full">
                                     Search: {searchTerm}
                                     <button onClick={() => setSearchTerm('')} className="hover:text-slate-900">
+                                        <span className="material-symbols-outlined text-[16px]">close</span>
+                                    </button>
+                                </span>
+                            )}
+                            {userSearchTerm && (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 text-slate-700 text-xs font-medium rounded-full">
+                                    User: {userSearchTerm}
+                                    <button onClick={() => setUserSearchTerm('')} className="hover:text-slate-900">
                                         <span className="material-symbols-outlined text-[16px]">close</span>
                                     </button>
                                 </span>
@@ -301,6 +357,7 @@ export default function CallLogsPage() {
                                 onClick={() => {
                                     setSearchTerm('');
                                     setStatusFilter('ALL');
+                                    setUserSearchTerm('');
                                 }}
                                 className="text-xs text-[#5da28c] hover:text-[#4a8572] font-semibold ml-auto"
                             >
@@ -316,20 +373,19 @@ export default function CallLogsPage() {
                         <table className="w-full text-left text-sm">
                             <thead className="bg-[#f9fafa] text-slate-500 font-medium border-b border-slate-100">
                                 <tr>
-                                    <th className="px-6 py-4">Time</th>
-                                    {user.role === 'admin' && <th className="px-6 py-4">User</th>}
-                                    <th className="px-6 py-4">Call ID</th>
-                                    <th className="px-6 py-4">Phone Number</th>
-                                    <th className="px-6 py-4">Duration</th>
-                                    <th className="px-6 py-4">Status</th>
-                                    <th className="px-6 py-4 text-right">Cost</th>
-                                    <th className="px-6 py-4">Actions</th>
+                                    <th className="px-4 py-3 md:px-6 md:py-4">Time</th>
+                                    {user.role === 'admin' && <th className="px-4 py-3 md:px-6 md:py-4">User</th>}
+                                    <th className="px-4 py-3 md:px-6 md:py-4">Call ID</th>
+                                    <th className="px-4 py-3 md:px-6 md:py-4">Phone Number</th>
+                                    <th className="px-4 py-3 md:px-6 md:py-4">Duration</th>
+                                    <th className="px-4 py-3 md:px-6 md:py-4">Status</th>
+                                    <th className="px-4 py-3 md:px-6 md:py-4 text-right">Cost</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50">
                                 {loading ? (
                                     <tr>
-                                        <td colSpan={user.role === 'admin' ? 8 : 7} className="px-6 py-12 text-center">
+                                        <td colSpan={user.role === 'admin' ? 7 : 6} className="px-4 py-12 md:px-6 text-center">
                                             <div className="flex items-center justify-center gap-2">
                                                 <div className="w-2 h-2 bg-[#5da28c] rounded-full animate-bounce"></div>
                                                 <div className="w-2 h-2 bg-[#5da28c] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
@@ -339,7 +395,7 @@ export default function CallLogsPage() {
                                     </tr>
                                 ) : filteredCalls.length === 0 ? (
                                     <tr>
-                                        <td colSpan={user.role === 'admin' ? 8 : 7} className="px-6 py-12 text-center">
+                                        <td colSpan={user.role === 'admin' ? 7 : 6} className="px-4 py-12 md:px-6 text-center">
                                             <div className="flex flex-col items-center gap-3">
                                                 <span className="material-symbols-outlined text-6xl text-slate-300">call_log</span>
                                                 <p className="text-slate-500 font-medium">No call logs found</p>
@@ -349,44 +405,38 @@ export default function CallLogsPage() {
                                     </tr>
                                 ) : (
                                     filteredCalls.map((call) => (
-                                        <tr key={call.id} className="group hover:bg-slate-50 transition-colors">
-                                            <td className="px-6 py-4 text-slate-600 font-mono text-xs">
+                                        <tr 
+                                            key={call.id} 
+                                            className="group hover:bg-slate-50 transition-colors cursor-pointer"
+                                            onClick={() => setSelectedCall(call)}
+                                        >
+                                            <td className="px-4 py-3 md:px-6 md:py-4 text-slate-600 font-mono text-xs">
                                                                                                   {format(new Date(parseFloat(call.created_at) * 1000), 'MMM dd, HH:mm:ss')}                                            </td>
                                             {user.role === 'admin' && (
-                                                <td className="px-6 py-4 font-medium text-slate-900">
+                                                <td className="px-4 py-3 md:px-6 md:py-4 font-medium text-slate-900">
                                                     {call.user?.name || call.user?.email?.split('@')[0] || 'Unknown'}
                                                 </td>
                                             )}
-                                            <td className="px-6 py-4 font-mono text-xs text-slate-700">
+                                            <td className="px-4 py-3 md:px-6 md:py-4 font-mono text-xs text-slate-700">
                                                 {call.call_id ? `${call.call_id.slice(0, 12)}...` : '-'}
                                             </td>
-                                            <td className="px-6 py-4 font-medium text-slate-900">
+                                            <td className="px-4 py-3 md:px-6 md:py-4 font-medium text-slate-900">
                                                                                                   {call.phone_number ? (
                                                                                                       call.phone_number.length > 8
                                                                                                           ? `${call.phone_number.slice(0, 4)}••••${call.phone_number.slice(-4)}`
                                                                                                           : call.phone_number
                                                                                                   ) : ''}                                            </td>
-                                            <td className="px-6 py-4 text-slate-600">
+                                            <td className="px-4 py-3 md:px-6 md:py-4 text-slate-600">
                                                 {call.duration ? `${call.duration}s` : '-'}
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 py-3 md:px-6 md:py-4">
                                                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${statusColorMap[call.status]?.background || 'bg-gray-100'} ${statusColorMap[call.status]?.text || 'text-gray-700'} ${statusColorMap[call.status]?.border || 'border-gray-200'}`}>
                                                     <span className={`size-1.5 rounded-full ${statusColorMap[call.status]?.dot || 'bg-gray-500'}`}></span>
                                                     <span className="capitalize">{call.status}</span>
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 text-right font-mono text-slate-900 font-medium">
+                                            <td className="px-4 py-3 md:px-6 md:py-4 text-right font-mono text-slate-900 font-medium">
                                                 ₦{call.cost.toFixed(2)}
-                                            </td>
-                                            <td className="px-6 py-4 flex items-center gap-2">
-                                                <button onClick={() => setSelectedCall(call)} className="text-slate-400 hover:text-slate-600 transition-colors">
-                                                    <Eye size={20} />
-                                                </button>
-                                                {user?.role === 'admin' && (
-                                                <button onClick={() => alert(`Deleting ${call.id}`)} className="text-red-400 hover:text-red-600 transition-colors">
-                                                    <Trash2 size={20} />
-                                                </button>
-                                                )}
                                             </td>
                                         </tr>
                                     ))

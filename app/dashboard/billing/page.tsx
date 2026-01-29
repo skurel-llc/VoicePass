@@ -99,7 +99,7 @@ export default function BillingPage() {
           </div>
 
           {/* Balance Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Current Balance */}
             <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-[#5da28c]/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
@@ -158,7 +158,7 @@ export default function BillingPage() {
           {/* Credit Packages */}
           <div className="bg-white rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] p-6">
             <h3 className="text-lg font-bold text-slate-900 mb-4">Quick Top-Up Packages</h3>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
                 { amount: 100, bonus: 0, popular: false },
                 { amount: 500, bonus: 25, popular: false },
@@ -220,18 +220,18 @@ export default function BillingPage() {
               <table className="w-full text-left text-sm">
                 <thead className="bg-[#f9fafa] text-slate-500 font-medium border-b border-slate-100">
                   <tr>
-                    <th className="px-6 py-4">Date</th>
-                    <th className="px-6 py-4">Description</th>
-                    <th className="px-6 py-4">Type</th>
-                    <th className="px-6 py-4 text-right">Amount</th>
-                    <th className="px-6 py-4 text-right">Balance After</th>
-                    <th className="px-6 py-4">Reference</th>
+                    <th className="px-4 py-3 md:px-6 md:py-4">Date</th>
+                    <th className="px-4 py-3 md:px-6 md:py-4">Description</th>
+                    <th className="px-4 py-3 md:px-6 md:py-4">Type</th>
+                    <th className="px-4 py-3 md:px-6 md:py-4 text-right">Amount</th>
+                    <th className="px-4 py-3 md:px-6 md:py-4 text-right">Balance After</th>
+                    <th className="px-4 py-3 md:px-6 md:py-4">Reference</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
                   {transactions.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-6 py-12 text-center">
+                      <td colSpan={6} className="px-4 py-12 md:px-6 text-center">
                         <div className="flex flex-col items-center gap-3">
                           <span className="material-symbols-outlined text-6xl text-slate-300">receipt_long</span>
                           <p className="text-slate-500 font-medium">No transactions yet</p>
@@ -242,11 +242,11 @@ export default function BillingPage() {
                   ) : (
                     transactions.map((txn, index) => (
                       <tr key={txn.id ?? index} className="hover:bg-slate-50 transition-colors">
-                        <td className="px-6 py-4 text-slate-600 font-mono text-xs">
+                        <td className="px-4 py-3 md:px-6 md:py-4 text-slate-600 font-mono text-xs">
                           {format(new Date(txn.created_at), 'MMM dd, yyyy HH:mm')}
                         </td>
-                        <td className="px-6 py-4 text-slate-900">{txn.description}</td>
-                        <td className="px-6 py-4">
+                        <td className="px-4 py-3 md:px-6 md:py-4 text-slate-900">{txn.description}</td>
+                        <td className="px-4 py-3 md:px-6 md:py-4">
                           <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
                             txn.type === 'CREDIT'
                               ? 'bg-green-50 text-green-600 border border-green-100'
@@ -258,15 +258,15 @@ export default function BillingPage() {
                             {txn.type}
                           </span>
                         </td>
-                        <td className={`px-6 py-4 text-right font-mono font-medium ${
+                        <td className={`px-4 py-3 md:px-6 md:py-4 text-right font-mono font-medium ${
                           txn.type === 'CREDIT' ? 'text-green-600' : 'text-red-600'
                         }`}>
                           {txn.type === 'CREDIT' ? '+' : '-'}₦{(txn.amount ?? 0).toFixed(2)}
                         </td>
-                        <td className="px-6 py-4 text-right font-mono text-slate-900">
+                        <td className="px-4 py-3 md:px-6 md:py-4 text-right font-mono text-slate-900">
                           {txn.balance_after != null ? `₦${txn.balance_after.toFixed(2)}` : '-'}
                         </td>
-                        <td className="px-6 py-4 font-mono text-xs text-slate-500">
+                        <td className="px-4 py-3 md:px-6 md:py-4 font-mono text-xs text-slate-500">
                           {txn.id ? String(txn.id).slice(0, 8) : '-'}
                         </td>
                       </tr>

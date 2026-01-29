@@ -262,10 +262,9 @@ export default function AnalyticsPage() {
 
           {!error && (
             <>
-              {/* KPI Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Replace with dynamic data */}
-                <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)]">
+                        {/* KPI Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                          {/* Replace with dynamic data */}                <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)]">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-slate-500 text-sm font-medium">Success Rate</span>
                     <div className="bg-green-50 p-1.5 rounded-lg">
@@ -319,7 +318,7 @@ export default function AnalyticsPage() {
               </div>
 
               {/* Charts Row */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Hourly Distribution */}
                 <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)]">
                   <h3 className="text-lg font-bold text-slate-900 mb-4">Call Distribution by Hour</h3>

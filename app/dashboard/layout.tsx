@@ -15,6 +15,7 @@ export default function DashboardLayout({
   const [showOTPModal, setShowOTPModal] = useState(false);
   const [user, setUser] = useState<SessionUser | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     async function fetchUser() {
@@ -92,7 +93,7 @@ export default function DashboardLayout({
 
       <div className="flex h-screen w-full bg-[#f9fafa]">
         {/* Sidebar */}
-        <aside className="w-64 h-full flex flex-col bg-white border-r border-slate-200 hidden md:flex shrink-0 z-20">
+        <aside className={`w-64 h-full flex flex-col bg-white border-r border-slate-200 shrink-0 z-20 transition-all duration-300 md:flex ${isSidebarOpen ? 'flex' : 'hidden'}`}>
           {/* Logo Section */}
           <div className="h-16 flex items-center px-6 border-b border-slate-100">
             <div className="flex items-center gap-3">
@@ -161,7 +162,15 @@ export default function DashboardLayout({
                 </button>
               </div>
             )}
-          </div>        </aside>
+          </div>
+        </aside>
+
+        {isSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-10 md:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+          ></div>
+        )}
 
         {/* Main Content */}
         <main className="flex-1 flex flex-col h-screen overflow-hidden bg-[#f9fafa] relative">
@@ -169,8 +178,11 @@ export default function DashboardLayout({
           <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-6 sticky top-0 z-10">
             {/* Breadcrumbs */}
             <div className="flex items-center text-sm">
-              <span className="text-slate-400">Home</span>
-              <span className="material-symbols-outlined text-slate-300 mx-2 text-[16px]">chevron_right</span>
+             <button className="md:hidden p-2 text-slate-500" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+                <span className="material-symbols-outlined">menu</span>
+              </button>
+              <span className="text-slate-400 hidden md:inline">Home</span>
+              <span className="material-symbols-outlined text-slate-300 mx-2 text-[16px] hidden md:inline">chevron_right</span>
               <span className="font-semibold text-slate-800">Dashboard Overview</span>
             </div>
 
@@ -189,9 +201,6 @@ export default function DashboardLayout({
                 <span className="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-white"></span>
               </button>
 
-              <button className="md:hidden p-2 text-slate-500">
-                <span className="material-symbols-outlined">menu</span>
-              </button>
             </div>
           </header>
 

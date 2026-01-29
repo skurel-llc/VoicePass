@@ -227,10 +227,10 @@ export default function DashboardPage() {
         }
       `}</style>
 
-      <div className="p-6 md:p-8">
-        <div className="max-w-7xl mx-auto flex flex-col gap-8">
+      <div className="p-4 md:p-8">
+        <div className="max-w-7xl mx-auto flex flex-col gap-6 md:gap-8">
           {/* Metrics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
             {/* Card 1: Total Calls */}
             <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] flex flex-col justify-between group hover:border-[#5da28c]/30 transition-all">
               <div className="flex justify-between items-start mb-4">
@@ -321,7 +321,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Charts Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Line Chart */}
             <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)]">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0 mb-6">
@@ -390,7 +390,7 @@ export default function DashboardPage() {
 
           {/* Recent Activity Table */}
           <div className="bg-white rounded-xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] overflow-hidden">
-            <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
+            <div className="p-4 md:p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
               <h3 className="text-lg font-bold text-slate-900">Recent Activity</h3>
               <Link href="/dashboard/calls" className="text-sm text-[#5da28c] font-semibold hover:text-[#4a8572] transition-colors">
                 View All Logs
@@ -401,60 +401,60 @@ export default function DashboardPage() {
               <table className="w-full text-left text-sm">
                 <thead className="bg-[#f9fafa] text-slate-500 font-medium border-b border-slate-100">
                   <tr>
-                    <th className="px-6 py-4">Time</th>
-                    {currentUser.role === 'admin' && <th className="px-6 py-4">User</th>}
-                    <th className="px-6 py-4">Recipient</th>
-                    <th className="px-6 py-4">Type</th>
-                    <th className="px-6 py-4">Duration</th>
-                    <th className="px-6 py-4">Status</th>
-                    <th className="px-6 py-4 text-right">Cost</th>
-                    <th className="px-6 py-4 text-right">Actions</th>
+                    <th className="px-4 py-3 md:px-6 md:py-4">Time</th>
+                    {currentUser.role === 'admin' && <th className="px-4 py-3 md:px-6 md:py-4">User</th>}
+                    <th className="px-4 py-3 md:px-6 md:py-4">Recipient</th>
+                    <th className="px-4 py-3 md:px-6 md:py-4">Type</th>
+                    <th className="px-4 py-3 md:px-6 md:py-4">Duration</th>
+                    <th className="px-4 py-3 md:px-6 md:py-4">Status</th>
+                    <th className="px-4 py-3 md:px-6 md:py-4 text-right">Cost</th>
+                    <th className="px-4 py-3 md:px-6 md:py-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
                   {recentCalls.length === 0 ? (
                     <tr>
-                      <td colSpan={currentUser.role === 'admin' ? 8 : 7} className="px-6 py-12 text-center text-slate-400">
+                      <td colSpan={currentUser.role === 'admin' ? 8 : 7} className="px-4 py-12 md:px-6 text-center text-slate-400">
                         No recent calls
                       </td>
                     </tr>
                   ) : (
                     recentCalls.map((call) => (
                       <tr key={call.id} className="group hover:bg-slate-50 transition-colors">
-                        <td className="px-6 py-4 text-slate-600 font-mono text-xs">
+                        <td className="px-4 py-3 md:px-6 md:py-4 text-slate-600 font-mono text-xs">
                           {format(new Date(parseFloat(call.created_at) * 1000), 'MMM dd, HH:mm:ss')}
                         </td>
                         {currentUser.role === 'admin' && (
-                            <td className="px-6 py-4 font-medium text-slate-900">
+                            <td className="px-4 py-3 md:px-6 md:py-4 font-medium text-slate-900">
                                 {call.user?.name || call.user?.email?.split('@')[0] || 'Unknown'}
                             </td>
                         )}
-                        <td className="px-6 py-4 font-medium text-slate-900">
+                        <td className="px-4 py-3 md:px-6 md:py-4 font-medium text-slate-900">
                           {call.phone_number ? (
                             call.phone_number.length > 8
                               ? `${call.phone_number.slice(0, 4)}••••${call.phone_number.slice(-4)}`
                               : call.phone_number
                           ) : ''}
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-4 py-3 md:px-6 md:py-4">
                           <div className="flex items-center gap-2">
                             <Key className="text-slate-400 size-[18px]" />
                             <span className="text-slate-600">OTP Code</span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-slate-600">
+                        <td className="px-4 py-3 md:px-6 md:py-4 text-slate-600">
                           {call.duration ? `00:${String(call.duration).padStart(2, '0')}` : '-'}
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-4 py-3 md:px-6 md:py-4">
                           <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${statusColorMap[call.status]?.background || 'bg-gray-100'} ${statusColorMap[call.status]?.text || 'text-gray-700'} ${statusColorMap[call.status]?.border || 'border-gray-200'}`}>
                             <span className={`size-1.5 rounded-full ${statusColorMap[call.status]?.dot || 'bg-gray-500'}`}></span>
                             <span className="capitalize">{call.status}</span>
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-right font-mono text-slate-900">
+                        <td className="px-4 py-3 md:px-6 md:py-4 text-right font-mono text-slate-900">
                           ₦{call.cost.toFixed(3)}
                         </td>
-                        <td className="px-6 py-4 text-right">
+                        <td className="px-4 py-3 md:px-6 md:py-4 text-right">
                           <button
                             onClick={() => setSelectedCall(call)}
                             className="p-2 text-slate-400 hover:text-[#5da28c] hover:bg-[#5da28c]/10 rounded-full transition-colors"
@@ -519,7 +519,7 @@ function CallDetailsModal({ call, onClose }: { call: RecentCall; onClose: () => 
         </div>
 
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="p-4 bg-slate-50 rounded-lg">
               <p className="text-xs font-medium text-slate-500 mb-1">Recipient</p>
               <p className="text-sm font-bold text-slate-900">{call.phone_number}</p>
